@@ -1,5 +1,6 @@
 from newsapi import NewsApiClient
 import pandas as pd
+from datetime import datetime, timedelta
 
 API_KEY = "188b1d9e2e794b0e98cb08db39f8d2e5"
 
@@ -54,22 +55,28 @@ class News:
 
 
 
+if __name__ == "__main__":
+    news = News()
 
-news = News()
+    keyword = "mental"
 
-keyword = "gender equality"
-#article_titles, content, url = news.get_top_news("ukraine")
-article_titles, content, url = news.get_every_news(keyword)
-"""
-print(article_titles)
-print(len(article_titles))
-print(type(article_titles))
-"""
+    from_date =   (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
+    to_date = datetime.today().strftime('%Y-%m-%d')
+    print(f"Downloading news of title {keyword} from {from_date} to {to_date}.")
+    #article_titles, content, url = news.get_top_news("ukraine")
 
 
-d = {'titles':article_titles, 'content':content, 'url': url}
-df = pd.DataFrame(d)
+    article_titles, content, url = news.get_every_news(keyword, from_param=from_date, to=to_date)
+    """
+    print(article_titles)
+    print(len(article_titles))
+    print(type(article_titles))
+    """
 
-df.to_excel(f"{keyword}.xlsx")
+
+    d = {'titles':article_titles, 'content':content, 'url': url}
+    df = pd.DataFrame(d)
+
+    df.to_csv(f"{keyword}.csv")
 #
 # print(content)
