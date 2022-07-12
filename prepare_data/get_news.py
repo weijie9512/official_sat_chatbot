@@ -7,7 +7,7 @@ class NewsGetter:
         self.categories = ["mental", "climate", ]
         
         
-        self.mental_news = pd.read_csv("mental.csv", index_col=0)
+        self.mental_news = pd.read_csv("../data/mental.csv", index_col=0)
 
 
         self.categories_dict = {"mental": self.mental_news}
@@ -23,5 +23,5 @@ class NewsGetter:
 
 
 newsgetter = NewsGetter()
-print(newsgetter.get_random_news("mental"))
+print(newsgetter.get_random_news("war"))
 

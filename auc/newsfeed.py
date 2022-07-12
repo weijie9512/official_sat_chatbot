@@ -58,7 +58,7 @@ class News:
 if __name__ == "__main__":
     news = News()
 
-    keyword = "mental"
+    keyword = "climate"
 
     from_date =   (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
     to_date = datetime.today().strftime('%Y-%m-%d')
@@ -77,6 +77,7 @@ if __name__ == "__main__":
     d = {'titles':article_titles, 'content':content, 'url': url}
     df = pd.DataFrame(d)
 
+ 
     df.to_csv(f"{keyword}.csv")
 #
 # print(content)

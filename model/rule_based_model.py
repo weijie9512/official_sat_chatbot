@@ -1157,6 +1157,244 @@ class ModelDecisionMaker:
             
             },
 
+            ############################### SHORTCUT: AUC ############################
+
+
+            # SHORTCUT: AUC AWARENESS
+            "auc_awareness_begin": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_begin(user_id, app, db_session),
+
+               "choices": {
+                  "mental": "auc_awareness_mental",
+                  "war": "auc_awareness_war",
+               },
+               "protocols": {
+                  "mental": [],
+                  "war": [],
+               },
+            
+            },
+            "auc_awareness_mental": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_mental(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "auc_awareness_feel_reading_news",
+               },
+               "protocols": {
+                  "continue": [],
+               },
+            
+            },
+
+            "auc_awareness_war": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_war(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "auc_awareness_feel_reading_news",
+               },
+               "protocols": {
+                  "continue": [],
+               },
+            
+            },
+
+
+
+            "auc_awareness_feel_reading_news": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_feel_reading_news(user_id, app, db_session),
+
+               "choices": {
+                  "no feeling": "auc_awareness_no_feeling",
+                  "feel the compassion energy": "auc_awareness_feel_compassion",
+               },
+               "protocols": {
+                  "mental": [],
+                  "war": [],
+               },
+            
+            },
+
+            "auc_awareness_no_feeling": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_no_feeling(user_id, app, db_session),
+
+               "choices": {
+                  "can't relate, the news feel foreign": "auc_awareness_begin",
+                  "can't feel the compassion energy": "auc_awareness_go_practice_sat",
+               },
+               "protocols": {
+                 "can't relate, the news feel foreign": [],
+                  "can't feel the compassion energy": [],
+               },
+            
+            },
+
+            "auc_awareness_go_practice_sat": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_go_practice_sat(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "sat_compassion_start",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            
+            },
+
+
+            "auc_awareness_feel_compassion": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_feel_compassion(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "auc_awareness_quick_test",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            
+            },
+
+            "auc_awareness_quick_test": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_quick_test(user_id, app, db_session),
+
+               "choices": {
+                  "reducing own electricity usage": "auc_awareness_explain_compassion_difference",
+                  "reducing own plastic bag usage": "auc_awareness_explain_compassion_difference",
+                  "enforce carbon-neutral policies": "auc_awareness_congrats",
+                  "pressuring government to encourage green-energy related investments": "auc_awareness_congrats",
+               },
+               "protocols": {
+                 "reducing own electricity usage": [],
+                  "reducing own plastic bag usage": [],
+                  "enforce carbon-neutral policies": [],
+                  "pressuring government to encourage green-energy related investments": [],
+               },
+            
+            },
+
+            "auc_awareness_explain_compassion_difference": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_explain_compassion_difference(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "auc_awareness_congrats",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            
+            },
+
+            "auc_awareness_congrats": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_congrats(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            
+            },
+
+
+            # SHORTCUT: AUC UNDERSTANDING
+            "auc_understanding_begin": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_congrats(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            
+            },
+
+
+            "auc_understanding_research_existing": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_existing(user_id, app, db_session),
+
+               "choices": {
+                  "yes": "auc_understanding_research_reasonable_solutions",
+                   "no": "auc_understanding_set_deadline",
+               },
+               "protocols": {
+                 "yes": [],
+                 "no": [],
+               },
+
+            },
+
+            "auc_understanding_set_deadline": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_set_deadline(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            
+            },
+
+            "auc_understanding_research_reasonable_solutions": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_reasonable_solutions(user_id, app, db_session),
+
+               "choices": {
+                  "yes": "auc_understanding_go_coc",
+                   "no": "auc_understanding_write_plan",
+               },
+               "protocols": {
+                 "yes": [],
+                 "no": [],
+               },
+
+            },
+
+            "auc_understanding_go_coc": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_go_coc(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+
+            },
+
+            "auc_understanding_write_plan": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_write_plan(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+
+            },
+
+            # SHORTCUT: AUC COMMITMENTS
+
+            "auc_commitments_begin": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_begin(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "continue": [],
+               },
+
+            },
+
+
+
+            
+
+
+
+
 
         }
         self.QUESTION_KEYS = list(self.QUESTIONS.keys())
@@ -1644,6 +1882,8 @@ class ModelDecisionMaker:
 
     def transfer_before_main_node(self, user_id, app, db_session):
         return ["You have did great so far! Now let us move to MAIN NODE."]
+
+
 
     # SHORTCUT: ESA
     def esa_last_week(self, user_id, app, db_session):
