@@ -1380,13 +1380,115 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_begin(user_id, app, db_session),
 
                "choices": {
-                  "continue": "transfer_before_main_node",
+                  "continue": "auc_commitments_follow_through_solutions",
                },
                "protocols": {
                  "continue": [],
                },
-
             },
+
+
+            "auc_commitments_follow_through_solutions": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_follow_through_solutions(user_id, app, db_session),
+
+               "choices": {
+                  "yes": "auc_commitments_write_plan",
+                  "no": "auc_commitments_why_not_follow_through_solutions",
+               },
+               "protocols": {
+                  "yes": [],
+                  "no": [],
+               },
+            },
+
+             "auc_commitments_why_not_follow_through_solutions": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_why_not_follow_through_solutions(user_id, app, db_session),
+
+               "choices": {
+                  "not practical": "auc_commitments_reflect_on_understanding",
+                  "lack of discipline": "auc_commitments_find_partners",
+               },
+               "protocols": {
+                  "not practical": [],
+                  "lack of discipline": [],
+               },
+            },
+
+            "auc_commitments_reflect_on_understanding": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_reflect_on_understanding(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                  "continue": [],
+               },
+            },
+
+            "auc_commitments_find_partners": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_find_partners(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                  "continue": [],
+               },
+            },
+
+            "auc_commitments_write_plan": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_write_plan(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "auc_commitments_compassion_energy_compassion",
+               },
+               "protocols": {
+                  "continue": [],
+               },
+            },
+
+
+            "auc_commitments_compassion_energy_compassion": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_compassion_energy_compassion(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "auc_commitments_feel_accomplished",
+               },
+               "protocols": {
+                  "continue": [],
+               },
+            },
+
+            "auc_commitments_feel_accomplished": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_feel_accomplished(user_id, app, db_session),
+
+               "choices": {
+                  "yes": "auc_commitments_write_blog_post",
+                  "no": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "yes": [],
+                  "no": [],
+               },
+            },
+
+            "auc_commitments_write_blog_post": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_write_blog_post(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "transfer_before_main_node",
+               },
+               "protocols": {
+                 "contiunue": [],
+               },
+            },
+
+
+
+            
+
+
+
 
 
 

@@ -23,5 +23,5 @@ class NewsGetter:
 
 
 newsgetter = NewsGetter()
-print(newsgetter.get_random_news("war"))
+print(newsgetter.get_random_news("mental"))
 
