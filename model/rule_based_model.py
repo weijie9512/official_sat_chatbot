@@ -607,7 +607,7 @@ class ModelDecisionMaker:
                 },
             },
 
-            ############################### SHORTCUT: AUC ############################
+
 
             ############################### SHORTCUT: COC ############################
             "coc": {
@@ -1298,7 +1298,7 @@ class ModelDecisionMaker:
 
             # SHORTCUT: AUC UNDERSTANDING
             "auc_understanding_begin": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_congrats(user_id, app, db_session),
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_begin(user_id, app, db_session),
 
                "choices": {
                   "continue": "transfer_before_main_node",
@@ -2122,6 +2122,72 @@ class ModelDecisionMaker:
     def sat_no_anti_social(self, user_id, app, db_session):
         return ["Amazing! Now let us go back to the question about vulnerable community. "]
     
+    # SHORTCUT: AUC: Awareness
+    def auc_awareness_begin(self, user_id, app, db_session):
+        pass
+    def auc_awareness_mental(self, user_id, app, db_session):
+        pass
+    def auc_awareness_war(self, user_id, app, db_session):
+        pass
+    def auc_awareness_feel_reading_news(self, user_id, app, db_session):
+        pass
+    def auc_awareness_no_feeling(self, user_id, app, db_session):
+        pass
+    def auc_awareness_go_practice_sat(self, user_id, app, db_session):
+        pass
+    def auc_awareness_feel_compassion(self, user_id, app, db_session):
+        pass
+    def auc_awareness_quick_test(self, user_id, app, db_session):
+        pass
+    def auc_awareness_explain_compassion_difference(self, user_id, app, db_session):
+        pass
+    def auc_awareness_congrats(self, user_id, app, db_session):
+        pass
+
+    # SHORTCUT: AUC: Understanding
+    def auc_understanding_begin(self, user_id, app, db_session):
+        pass
+
+    def auc_understanding_research_existing(self, user_id, app, db_session):
+        pass
+
+    def auc_understanding_set_deadline(self, user_id, app, db_session):
+        pass
+    def auc_understanding_research_reasonable_solutions(self, user_id, app, db_session):
+        pass
+    def auc_understanding_go_coc(self, user_id, app, db_session):
+        pass
+    def auc_understanding_write_plan(self, user_id, app, db_session):
+        pass
+
+    # SHORTCUT: AUC: Commitments
+
+    def auc_commitments_begin(self, user_id, app, db_session):
+        pass
+
+    def auc_commitments_follow_through_solutions(self, user_id, app, db_session):
+        pass
+
+    def auc_commitments_why_not_follow_through_solutions(self, user_id, app, db_session):
+        pass
+
+    def auc_commitments_reflect_on_understanding(self, user_id, app, db_session):
+        pass
+    def auc_commitments_find_partners(self, user_id, app, db_session):
+        pass
+    def auc_commitments_write_plan(self, user_id, app, db_session):
+        pass
+    def auc_commitments_compassion_energy_compassion(self, user_id, app, db_session):
+        pass
+    def auc_commitments_feel_accomplished(self, user_id, app, db_session):
+        pass
+    def auc_commitments_write_blog_post(self, user_id, app, db_session):
+        pass
+
+
+
+
+
     # SHORTCUT: LISA
     def get_model_prompt_trying_protocol(self, user_id, app, db_session):
         prev_qs = pd.DataFrame(self.recent_questions[user_id],columns=['sentences'])
