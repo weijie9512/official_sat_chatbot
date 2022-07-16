@@ -545,7 +545,7 @@ class ModelDecisionMaker:
             "shown_tender_compassion": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.shown_tender_compassion(user_id, app, db_session),
                 "choices": {
-                    "continue": "shown_compassion_ask_feel_better",
+                    "continue": "main_node",
                 },
 
 
@@ -557,7 +557,7 @@ class ModelDecisionMaker:
             "shown_foresighted_compassion": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.shown_foresighted_compassion(user_id, app, db_session),
                 "choices": {
-                    "continue": "shown_compassion_ask_feel_better",
+                    "continue": "main_node",
                 },
 
 
@@ -658,11 +658,11 @@ class ModelDecisionMaker:
             "esa_simple_scenario": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_simple_scenario(user_id, app, db_session),
                 "choices": {
-                    "continue": "transfer_before_main_node",
+                    "I will do my best": "transfer_before_main_node",
                 },
 
                 "protocols": {
-                    "continue": [],
+                    "I will do my best": [],
                 },
             },
 
@@ -2013,17 +2013,16 @@ class ModelDecisionMaker:
                 to do meaningful things in the real world! At the MAIN NODE, please go to Awareness, Understanding, Commitments (AUC) to start making impact in the real world!"]
     
     def shown_compassion_ask_feel_better(self, user_id, app, db_session):
-        prev_qs = pd.DataFrame(self.recent_questions[user_id],columns=['sentences'])
-        data = self.datasets[user_id]
-        base_prompt = self.user_emotions[user_id] + " - Do you feel that you are trying to control someone?"
-        column = data[base_prompt].dropna()
+        curr_question_code = "A01"
+        base_prompt = self.question_bank.loc[curr_question_code]['question']
+        prev_qs = pd.DataFrame(self.recent_questions[user_id], columns=['sentences'])
+
+        column = self.compassion_data[curr_question_code].dropna() # this returns the vaierty of text, since compassion_data col name is question code
         question = self.get_best_sentence(column, prev_qs)
-        if len(self.recent_questions[user_id]) < 50:
-            self.recent_questions[user_id].append(question)
-        else:
-            self.recent_questions[user_id] = []
-            self.recent_questions[user_id].append(question)
-        return self.split_sentence(question)
+
+        self.add_and_check_recent_questions_length(user_id, question)
+
+        return question
 
     # SHORTCUT: MAIN NODE METHOD 
     def main_node(self, user_id, app, db_session):
@@ -2572,6 +2571,7 @@ class ModelDecisionMaker:
                 and current_choice != "greet_user"
                 and current_choice != "main_node"
                 and current_choice != "sat_how_to_help_vulnerable_community"
+                and current_choice != "esa_simple_scenario"
 
             ):
                 user_choice = user_choice.lower()
