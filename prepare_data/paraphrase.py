@@ -38,7 +38,7 @@ class ParaphraseMachine:
         
 
 class BacktranslationMachine:
-    def __init__(self, src="en", tgt="fr"):
+    def __init__(self, src="en", tgt="zh"):
         # Languages code: https://developers.google.com/admin-sdk/directory/v1/languages 
         # https://towardsdatascience.com/data-augmentation-in-nlp-using-back-translation-with-marianmt-a8939dfea50a
         self.src = src
@@ -73,6 +73,7 @@ class BacktranslationMachine:
         # translate back to first language
         formatted_text = self.process_text(self.src, input_sentence)
         encoded_lang2 = self.tokenizer2(formatted_text, padding=True, return_tensors="pt")
+        print(encoded_lang2)
         translated_encoded_lang1 = self.model2.generate(**encoded_lang2)
         decoded_lang1 = self.tokenizer2.batch_decode(translated_encoded_lang1, skip_special_tokens=True, clean_up_tokenization_spaces=True)
         return decoded_lang1
