@@ -773,11 +773,25 @@ class ModelDecisionMaker:
 
                "choices": {
                    "yes": "trying_protocol_3_and_4_and_5",
-                   "no": "transfer_before_main_node"
+                   "no": "sat_go_esa_or_end"
                },
                "protocols": {
                   "yes": [],
                    "no": [],
+               },
+
+            },
+
+            "sat_go_esa_or_end":{
+                 "model_prompt": lambda user_id, db_session, curr_session, app: self.sat_go_esa_or_end(user_id, app, db_session),
+
+               "choices": {
+                   "esa": "transfer_to_main_node",
+                   "end": "ending_prompt"
+               },
+               "protocols": {
+                  "esa": [],
+                   "end": [],
                },
 
             },
@@ -1977,18 +1991,7 @@ class ModelDecisionMaker:
     def trying_protocol_13(self, user_id, app, db_session):
         curr_question_code = "A04"
 
-        # get current_question prompt, and previous questions
-        base_prompt = self.question_bank.loc[curr_question_code]['question'] # question for this current node
-        prev_qs = pd.DataFrame(self.recent_questions[user_id], columns=['sentences']) # previous questions
-
-        # potential rewritings of the prompt
-        column = self.compassion_data[curr_question_code].dropna() # this returns the vaierty of text, since compassion_data col name is question code
-        
-        # get best sentence
-        question = self.get_best_sentence(column, prev_qs)
-
-        # remove the sentence
-        self.add_and_check_recent_questions_length(user_id, question)
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
         return question
     
@@ -1996,31 +1999,56 @@ class ModelDecisionMaker:
 
     
     def get_model_prompt_found_compassion_to_child(self, user_id, app, db_session):
-        return ["Now take a deep breath. Close your eyes, and feel. Do you feel compassionate to your childhood self?"]
+        curr_question_code = "A05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+        #return ["Now take a deep breath. Close your eyes, and feel. Do you feel compassionate to your childhood self?"]
 
     def check_tender_vs_foresighted_compassion(self, user_id, app, db_session):
-        return ["Do you feel like you want to protect the child, or do you feel like you need to help the child to grow up?"]
+        curr_question_code = "A06"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+        #return ["Do you feel like you want to protect the child, or do you feel like you need to help the child to grow up?"]
 
     def shown_tender_compassion(self, user_id, app, db_session):
+        curr_question_code = "A07"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        curr_question_code = "A09"
+
+        question2 = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return [question[0], question2[0]]
         return ["Congratulations! You have shown tender compassion. Tender compassion is the first phase of compassion, where you feel sympathy towards the victim. \
                 You feel for the victim, hoping to do something that can alleviate the suffering of the victim immediately. \
                 Now, it is time to bring the compassion to the next level. Please take SAT module later to help you develop foresighted compassion! Foresighted compassion \
                 aims to help you develop long-term solutions that can help victim to face the suffering , and grow from there. Let's go further!"]
 
+    
     def shown_foresighted_compassion(self, user_id, app, db_session):
+        curr_question_code = "A08"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        curr_question_code = "A10"
+
+        question2 = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+
+        return [question[0], question2[0]]
         return ["Congratulations! You have shown foresighted compassion to your childhood self! Contrary to tender compassion which is an immediate form of sympathy towards victim \
             you have shown foresighted compassion which helps you to think how to help victim long-term! Now, it is time for you to use your compassion \
                 to do meaningful things in the real world! At the MAIN NODE, please go to Awareness, Understanding, Commitments (AUC) to start making impact in the real world!"]
     
     def shown_compassion_ask_feel_better(self, user_id, app, db_session):
-        curr_question_code = "A01"
-        base_prompt = self.question_bank.loc[curr_question_code]['question']
-        prev_qs = pd.DataFrame(self.recent_questions[user_id], columns=['sentences'])
+        curr_question_code = "A08"
 
-        column = self.compassion_data[curr_question_code].dropna() # this returns the vaierty of text, since compassion_data col name is question code
-        question = self.get_best_sentence(column, prev_qs)
-
-        self.add_and_check_recent_questions_length(user_id, question)
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
         return question
 
@@ -2050,6 +2078,11 @@ class ModelDecisionMaker:
 
     # SHORTCUT: ESA
     def esa_last_week(self, user_id, app, db_session):
+        curr_question_code = "G01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you follow through last week actions?"]
 
     def esa_simple_scenario(self, user_id, app, db_session):
@@ -2065,122 +2098,306 @@ class ModelDecisionMaker:
     
     # SHORTCUT: SAT
     def sat_compassion_start(self, user_id, app, db_session):
+        curr_question_code = "B01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Before we start, notes that the main purpose of using this chatbot is to develop compassion. "]
         
     def sat_compassion_difference(self, user_id, app, db_session):
+        curr_question_code = "B02"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Understand that there are 2 types of compassion. Tender compassion is a more commonly seen compassion, where the people generates immediate sympathetic feeling towards some unfortunate events. Another form of compassion, which goes beyond initial sympathetic feeling, and wanted to do more sustainable and systematically to alleviate the situation, would be known as foresighted compassion. Do you need an example?"]
 
     def sat_compassion_difference_example(self, user_id, app, db_session):
         return ["Examples of difference between tender Compassion and foresighted compassion."]
 
-    def trying_protocol_8(self, user_id, app, db_session):
-        return ["Let us to exercise 8. When you are done, click on continue."]
 
     def project_emotion_to_child(self, user_id, app, db_session):
         return ["Let us continue. Now, close your eyes, project the negative emotions to the child, and feel the emotion."]
     
     def sat_feel_compassion_to_child_question(self, user_id, app, db_session):
+        curr_question_code = "A05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you feel compassionate towards your childhood self?"]
 
     # SHORTCUT: SAT PART 1
     def sat_part1_begin(self, user_id, app, db_session):
+        curr_question_code = "B03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["This is fine! This is exactly the reason this chatbot is created! We aim to develop compassion for you! Let us begin!"]
+    
     def trying_protocol_1_and_2(self, user_id, app, db_session):
+        curr_question_code = "B04"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["To feel compassionate towards the child, we have to first become intimate with our child. Let us practise exercise 1 and 2."]
 
     def sat_form_connection_with_child_level1(self, user_id, app, db_session):
+        curr_question_code = "B05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you form some connection with your childhood self?"]
     
     def sat_take_child_relationship_to_next_level(self, user_id, app, db_session):
+        curr_question_code = "B06"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Amazing! You have accomplished the first goal! However, we are still not exactly there. Are you ready to take the relationship with the child self to the next level? "]
     
+    def sat_go_esa_or_end(self, user_id, app, db_session):
+        curr_question_code = "B07"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def trying_protocol_3_and_4_and_5(self, user_id, app, db_session):
+        curr_question_code = "B08"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Now that you feel your connection with the child, time to show your childhood self some love. Exercise 3, 4 and 5."]
     
     def sat_form_connection_with_child_level2(self, user_id, app, db_session):
+        curr_question_code = "B09"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you feel love and feel like you want to protect your child now?"]
 
     def sat_completed_tender_compassion_training(self, user_id, app, db_session):
+        curr_question_code = "B10"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Congratulations! You have shown tender compassion! This is a great first stage of compassion, where you have shown sympathy towards the child! Now, let us go on and see what to do with this compassion."]
 
     # SHORTCUT: SAT PART 2
+
+    def sat_ask_type_of_compassion(self, user_id, app, db_session):
+        curr_question_code = "C01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+        return ["What kind of compassion do you feel towards your childhood self? Is that tender compassion which is an immediate sympathy towards the child, or is that foresighted compassion, where you help to make the child grow for the long term?"]
+    
     def sat_shown_tender_compassion(self, user_id, app, db_session):
+        curr_question_code = "C03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["You have shown tender compassion towards the childhood self. Now, try to shift that compassion, and project that compassion feeling towards a vulnerable community (If you need help thinking about a vulnerable community, go to AUC)."]
 
     def sat_ask_if_help_vulnerable_communities(self, user_id, app, db_session):
+        curr_question_code = "C04"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you feel like you should help them?"]
     
     def sat_ask_why_not_help_vulnerable_communities(self, user_id, app, db_session):
+        curr_question_code = "C05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Why is that? Do you feel like they do not deserve some help, or you can't feel the compassion towards them?"]
     
     def sat_answer_cant_feel_compassion(self, user_id, app, db_session):
+        curr_question_code = "C06"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Let us take a step back, and try to form an intimate relationship with our childhood self."]
     
     def trying_protocol_15(self, user_id, app, db_session):
+        curr_question_code = "C07"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Let us take a step back. With the tender compassion that you have developed towards your child, try to do exercise 15 (change perspective)."]
     
     def sat_imagine_self_vulnerable(self, user_id, app, db_session):
+        curr_question_code = "C08"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Now close your eyes, imagine that you're part of that vulnerable community. Do you feel you deserve some help?"]
 
     def sat_ask_if_help_vulnerable_communities2(self, user_id, app, db_session):
+        curr_question_code = "C10"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Now back to your own self. Do you feel like you should help the vulnerable community?"]
 
     def sat_vulnerable_communities_think_deeper(self, user_id, app, db_session):
+        curr_question_code = "C09"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["There must be something deeper that lead the position of them as the vulnerable communities today. Think deeper. Now, do you want to help them?"]
     
     
     # SHORTCUT: SAT PART 3
 
-    def sat_ask_type_of_compassion(self, user_id, app, db_session):
-        return ["What kind of compassion do you feel towards your childhood self? Is that tender compassion which is an immediate sympathy towards the child, or is that foresighted compassion, where you help to make the child grow for the long term?"]
     
     def sat_ask_user_if_want_protocol_8(self, user_id, app, db_session):
+        curr_question_code = "D01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Great! If you believe that you have shown the trait of foresighted compassion, is it okay if still do some protocols to see how we do?"]
 
-    
+    def trying_protocol_8(self, user_id, app, db_session):
+        curr_question_code = "D02"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+        return ["Let us to exercise 8. When you are done, click on continue."]
 
     # SHORTCUT: SAT PART 4
     def sat_how_to_help_vulnerable_community(self, user_id, app, db_session):
+        curr_question_code = "E01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["How do you feel like you should help them?"]
     
     def sat_shown_foresighted_compassion_and_ready(self, user_id, app, db_session):
+        curr_question_code = "E02"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Congratulations! You have shown foresighted compassion, where you expect the child to deal with situation maturely. You have developed the capability to develop long-term sustainable solutions. Let us move to MAIN NODE to make meaningful actions."]
     
     def trying_protocol_17_and_18(self, user_id, app, db_session):
+        curr_question_code = "E03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Now think about this. Sometimes child make unreasonable requests. When they don't get it, they will be upset. It is the responsibility of our adult self to teach them to bear with it, deal with the situation with maturity. Let us practise exercise 17 and 18."]
     def sat_immediate_action_or_maturity(self, user_id, app, db_session):
+        curr_question_code = "E04"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you feel that the best sort of action is perhaps not something you immediately think of, or something that the child want, rather, it could be a more difficult action that requires discipline or maturity?"]
     
     def sat_completed_foresighted_compassion_training(self, user_id, app, db_session):
+        curr_question_code = "E05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Congratulations! You have shown foresighted compassion. Now it is time to practise it! Head to AUC so that you can do something meaningful! Head to MAIN NODE."]
 
 
     # SHORTCUT: SAT PART 5
     def sat_might_be_anti_social(self, user_id, app, db_session):
+        curr_question_code = "F01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["There might be some form of anti-social behaviour exhibited. Let us dives a little bit deeper."]
 
     def sat_personal_resentment(self, user_id, app, db_session):
+        curr_question_code = "F02"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you have some personal resentments towards someone you know?"]
 
     def trying_protocol_17_and_18_anti_social(self, user_id, app, db_session):
+        curr_question_code = "F08"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["There is a different degree of anti-social behavior. Let us take some time to act it out. Do exercise 17 and 18."]
 
     def sat_ask_care_social(self, user_id, app, db_session):
+        curr_question_code = "F09"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you feel you care a little bit more about social environments?"]
 
     def sat_care_about_other_people(self, user_id, app, db_session):
+        curr_question_code = "F03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you care about things that happening around you? For example, friends, families?"]
 
     def sat_local_community(self, user_id, app, db_session):
+        curr_question_code = "F04"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you know what is happening in your local community? Have you joined any local activity?"]
 
     def sat_global_community(self, user_id, app, db_session):
+        curr_question_code = "F05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Do you care about events happening at the other side of the world?"]
 
     def sat_global_community_compassion(self, user_id, app, db_session):
+        curr_question_code = "F06"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Great! Do you feel compassionate towards events happening at the other side of the world"]
 
     def sat_no_anti_social(self, user_id, app, db_session):
+        curr_question_code = "F07"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         return ["Amazing! Now let us go back to the question about vulnerable community. "]
     
     # SHORTCUT: AUC: Awareness
@@ -2667,3 +2884,20 @@ class ModelDecisionMaker:
         else:
             self.recent_questions[user_id] = []
             self.recent_questions[user_id].append(question)
+
+    def get_best_sentence_from_question_code(self, user_id, question_code):
+
+        # get current_question prompt, and previous questions
+        base_prompt = self.question_bank.loc[question_code]['question'] # question for this current node
+        prev_qs = pd.DataFrame(self.recent_questions[user_id], columns=['sentences']) # previous questions
+
+        # potential rewritings of the prompt
+        column = self.compassion_data[question_code].dropna() # this returns the vaierty of text, since compassion_data col name is question code
+        
+        # get best sentence
+        question = self.get_best_sentence(column, prev_qs)
+
+        # remove the sentence
+        self.add_and_check_recent_questions_length(user_id, question)
+
+        return question
