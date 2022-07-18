@@ -1,3 +1,4 @@
+# CHANGED_HERE
 import nltk
 
 from model.models import UserModelSession, Choice, UserModelRun, Protocol
@@ -17,12 +18,13 @@ from nltk.corpus import wordnet  # noqa
 class ModelDecisionMaker:
     def __init__(self):
 
-        self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
-        self.robert = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/SATbot2.0/model/robert.csv', encoding='ISO-8859-1')
-        self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
-        self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
-        self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
-
+        self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
+        self.robert = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/robert.csv', encoding='ISO-8859-1')
+        self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
+        self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
+        self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
+        self.compassion_data = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/sat_data.csv', encoding='ISO-8859-1')
+        self.question_bank = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/question_bank.csv', index_col="questioncode")
         # Titles from workshops (Title 7 adapted to give more information)
         self.PROTOCOL_TITLES = [
             "0: None",
@@ -564,6 +566,21 @@ class ModelDecisionMaker:
                 },
             },
 
+            "shown_compassion_ask_feel_better":{
+                 "model_prompt": lambda user_id, db_session, curr_session, app: self.shown_compassion_ask_feel_better(user_id, app, db_session),
+                "choices": {
+                    "yes": "main_node",
+                    "no": "trying_protocol_13",
+                },
+
+
+                "protocols": {
+                    "yes": [],
+                    "no": [],
+                },
+
+            },
+
 
             ############################### SHORTCUT: MAIN NODE ############################
             "main_node": {
@@ -641,11 +658,11 @@ class ModelDecisionMaker:
             "esa_simple_scenario": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_simple_scenario(user_id, app, db_session),
                 "choices": {
-                    "continue": "transfer_before_main_node",
+                    "I will do my best": "transfer_before_main_node",
                 },
 
                 "protocols": {
-                    "continue": [],
+                    "I will do my best": [],
                 },
             },
 
@@ -1609,9 +1626,10 @@ class ModelDecisionMaker:
 
 
     def greet_user(self, user_id):
-        greet_user = ["Hello! Welcome to the compassion chatbot!, This chatbot is used to develop foresighted compassion. \
-        Contrary to tender compassion, foresighted compassion aims to help you to develop sustainable, actionable compassionate trait. \
-            Please continue if you intend to develop this foresighted compassion!"]
+        greet_user = ["Hello! Welcome to the compassion chatbot!, This chatbot is used to develop foresighted compassion. Compassion is very important, and the absence of compassion can lead to severe consequence.",  \
+                    "One example of lack of universal compassion is the Russian-Ukrainian war, where the leaders that do not have compassion took drastic actions and led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential.", \
+                    "Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by projection of compassion from childhood self to larger issues like war.", \
+                    "More specifically, this chatbot aims to develop foresighted compassion.  Contrary to tender compassion, foresighted compassion aims to develop compassionate traits within you to develop sustainable, and actionable items for you. "]
         return greet_user
 
     def get_opening_prompt(self, user_id):
@@ -1685,7 +1703,8 @@ class ModelDecisionMaker:
         #return random.choice(column.dropna().sample(n=15).to_list()) #using random choice instead of machine learning
         maxscore = 0
         chosen = ''
-        for row in column.dropna().sample(n=5): #was 25
+        # CHANGED_HERE from 5 to 2
+        for row in column.dropna().sample(n=2): #was 25
              fitscore = get_sentence_score(row, prev_qs)
              if fitscore > maxscore:
                  maxscore = fitscore
@@ -1956,8 +1975,26 @@ class ModelDecisionMaker:
 
     # COMPASSION METHOD
     def trying_protocol_13(self, user_id, app, db_session):
-        return ["Let us try Protocol 13 (This might be a repeat to make sure that we are on the right path).  Please try it now, and press continue when you're done."]
+        curr_question_code = "A04"
 
+        # get current_question prompt, and previous questions
+        base_prompt = self.question_bank.loc[curr_question_code]['question'] # question for this current node
+        prev_qs = pd.DataFrame(self.recent_questions[user_id], columns=['sentences']) # previous questions
+
+        # potential rewritings of the prompt
+        column = self.compassion_data[curr_question_code].dropna() # this returns the vaierty of text, since compassion_data col name is question code
+        
+        # get best sentence
+        question = self.get_best_sentence(column, prev_qs)
+
+        # remove the sentence
+        self.add_and_check_recent_questions_length(user_id, question)
+
+        return question
+    
+    
+
+    
     def get_model_prompt_found_compassion_to_child(self, user_id, app, db_session):
         return ["Now take a deep breath. Close your eyes, and feel. Do you feel compassionate to your childhood self?"]
 
@@ -1975,6 +2012,18 @@ class ModelDecisionMaker:
             you have shown foresighted compassion which helps you to think how to help victim long-term! Now, it is time for you to use your compassion \
                 to do meaningful things in the real world! At the MAIN NODE, please go to Awareness, Understanding, Commitments (AUC) to start making impact in the real world!"]
     
+    def shown_compassion_ask_feel_better(self, user_id, app, db_session):
+        curr_question_code = "A01"
+        base_prompt = self.question_bank.loc[curr_question_code]['question']
+        prev_qs = pd.DataFrame(self.recent_questions[user_id], columns=['sentences'])
+
+        column = self.compassion_data[curr_question_code].dropna() # this returns the vaierty of text, since compassion_data col name is question code
+        question = self.get_best_sentence(column, prev_qs)
+
+        self.add_and_check_recent_questions_length(user_id, question)
+
+        return question
+
     # SHORTCUT: MAIN NODE METHOD 
     def main_node(self, user_id, app, db_session):
         return ["Welcome to the MAIN NODE! What do you feel like doing today?"]
@@ -2187,7 +2236,7 @@ class ModelDecisionMaker:
 
 
 
-
+    """
     # SHORTCUT: LISA
     def get_model_prompt_trying_protocol(self, user_id, app, db_session):
         prev_qs = pd.DataFrame(self.recent_questions[user_id],columns=['sentences'])
@@ -2318,7 +2367,7 @@ class ModelDecisionMaker:
         #self.add_to_next_protocols([self.PROTOCOL_TITLES[13], self.PROTOCOL_TITLES[14]])
         return self.get_next_protocol_question(user_id, app)
 
-
+    """
     def update_conversation(self, user_id, new_dialogue, db_session, app):
         try:
             session_id = self.user_choices[user_id]["current_session_id"]
@@ -2522,6 +2571,7 @@ class ModelDecisionMaker:
                 and current_choice != "greet_user"
                 and current_choice != "main_node"
                 and current_choice != "sat_how_to_help_vulnerable_community"
+                and current_choice != "esa_simple_scenario"
 
             ):
                 user_choice = user_choice.lower()
@@ -2597,3 +2647,11 @@ class ModelDecisionMaker:
             next_choices = list(self.QUESTIONS[next_choice]["choices"].keys())
         self.user_choices[user_id]["choices_made"]["current_choice"] = next_choice
         return {"model_prompt": next_prompt, "choices": next_choices}
+
+
+    def add_and_check_recent_questions_length(self, user_id, question):
+        if len(self.recent_questions[user_id]) < 50:
+            self.recent_questions[user_id].append(question)
+        else:
+            self.recent_questions[user_id] = []
+            self.recent_questions[user_id].append(question)
