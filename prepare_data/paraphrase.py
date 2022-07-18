@@ -13,8 +13,10 @@ class ParaphraseMachine:
         self.model = self.model.to(self.device)
         
 
-    def paraphrase(self, input_sentence, num_of_sentences = 5):
-        encoding = self.tokenizer.encode_plus(input_sentence, padding=True, return_tensors="pt")
+    def paraphrase(self, input_sentence, num_of_sentences = 1):
+        #encoding = self.tokenizer.encode_plus(input_sentence, padding=True, return_tensors="pt")
+        encoding = self.tokenizer(input_sentence, padding=True, return_tensors="pt")
+        
         input_ids, attention_masks = encoding["input_ids"].to(self.device), encoding["attention_mask"].to(self.device)
 
 
@@ -38,7 +40,7 @@ class ParaphraseMachine:
         
 
 class BacktranslationMachine:
-    def __init__(self, src="en", tgt="zh"):
+    def __init__(self, src="en", tgt="de"):
         # Languages code: https://developers.google.com/admin-sdk/directory/v1/languages 
         # https://towardsdatascience.com/data-augmentation-in-nlp-using-back-translation-with-marianmt-a8939dfea50a
         self.src = src
@@ -73,7 +75,6 @@ class BacktranslationMachine:
         # translate back to first language
         formatted_text = self.process_text(self.src, input_sentence)
         encoded_lang2 = self.tokenizer2(formatted_text, padding=True, return_tensors="pt")
-        print(encoded_lang2)
         translated_encoded_lang1 = self.model2.generate(**encoded_lang2)
         decoded_lang1 = self.tokenizer2.batch_decode(translated_encoded_lang1, skip_special_tokens=True, clean_up_tokenization_spaces=True)
         return decoded_lang1
@@ -87,8 +88,8 @@ if __name__ == "__main__":
 
     
     pm = ParaphraseMachine()
-    """
-    input_sentence = "This is fine! This is exactly the reason this chatbot is created! We aim to develop compassion for you! Let us begin! "
+    
+    input_sentence = ["This is fine! This is exactly the reason this chatbot is created! We aim to develop compassion for you! Let us begin! "]
     #input_sentence =  "paraphrase: " + input_sentence + " </s>"
     
     #generated_sentence = pm.batch_paraphrase(input_sentence, 5)
@@ -100,5 +101,5 @@ if __name__ == "__main__":
     input_sentence = ["This is fine! This is exactly the reason this chatbot is created! We aim to develop compassion for you! Let us begin! "]
     generated_sentence = bm.backtranslation(input_sentence)
     print(generated_sentence)
-    
+    """
 

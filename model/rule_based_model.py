@@ -627,8 +627,8 @@ class ModelDecisionMaker:
 
 
             ############################### SHORTCUT: COC ############################
-            "coc": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_last_week(user_id, app, db_session),
+            "coc_start": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.coc_start(user_id, app, db_session),
                 "choices": {
                     "yes": "main_node",
                     "no": "main_node",
@@ -2034,7 +2034,19 @@ class ModelDecisionMaker:
     def transfer_before_main_node(self, user_id, app, db_session):
         return ["You have did great so far! Now let us move to MAIN NODE."]
 
+    def coc_start(self, user_id, app, db_session):
+        answer_template_invite = "You can use the following template when answer the question that you have in mind."
+        answer_template = """Template: \n \
+                            1. Problem \n \
+                            2. Existing solutions \n \
+                            3. Proposed solutions \n \
+                            4. Feasibility \n \
+                            5. Resources required \n \
+                            6. Commitments from yourself \n \ 
+                            7. Evaluation metrics on success \n \
+                            8. Feeling about compassion"""
 
+        return ["Please go to http://127.0.0.1:5001/ for Clash of Ideas (COC).", answer_template_invite, answer_template]
 
     # SHORTCUT: ESA
     def esa_last_week(self, user_id, app, db_session):
