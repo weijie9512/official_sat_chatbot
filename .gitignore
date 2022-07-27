@@ -1,3 +1,4 @@
 *.DS_STORE
 *.pyc
-/data
+/data/ignore
+/data/survey_data/processed_data/paraphrased
