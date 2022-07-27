@@ -23,8 +23,14 @@ class ModelDecisionMaker:
         self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
         self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
         self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
-        self.compassion_data = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/sat_data.csv', encoding='ISO-8859-1')
+        self.compassion_data = pd.read_excel('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/survey_data/combined_data/sat_data_combined.xlsx')
         self.question_bank = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/question_bank.csv', index_col="questioncode")
+        
+        self.news_war = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/war.csv')
+        self.news_mental = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/mental.csv')
+        self.news_climate = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/climate.csv')
+        
+        
         # Titles from workshops (Title 7 adapted to give more information)
         self.PROTOCOL_TITLES = [
             "0: None",
@@ -147,9 +153,9 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.greet_user(user_id),
 
                 "choices": {
-                # CHANGED_HERE
+                # CHANGED_HERE/ CHANGED/ REVERT
                 #    "Continue": "opening_prompt"
-                    "Continue": "trying_protocol_13",
+                    "Continue": "main_node",
                 },
 
                 "protocols": {
@@ -586,8 +592,8 @@ class ModelDecisionMaker:
             "main_node": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.main_node(user_id, app, db_session),
                 "choices": {
-                    "Awareness, Understanding, Commitments (AUC)": "auc",
-                    "Clash of Ideas (COC)": "coc",
+                    "Awareness, Understanding, Commitments (AUC)": "auc_choose_a_u_c",
+                    "Clash of Ideas (COC)": "coc_start",
                     "Everyday Simple Action (ESA)": "esa_last_week",
                     "SAT protocols (SAT)": "sat_compassion_start", 
                     "End the session": "ending_prompt",
@@ -630,13 +636,11 @@ class ModelDecisionMaker:
             "coc_start": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.coc_start(user_id, app, db_session),
                 "choices": {
-                    "yes": "main_node",
-                    "no": "main_node",
+                    "continue": "transfer_before_main_node",
                 },
 
                 "protocols": {
-                    "yes": [],
-                    "no": [],
+                    "continue": [],
                 },
             },
 
@@ -1189,7 +1193,22 @@ class ModelDecisionMaker:
             },
 
             ############################### SHORTCUT: AUC ############################
+            "auc_choose_a_u_c": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_choose_a_u_c(user_id, app, db_session),
 
+               "choices": {
+                  "Awareness": "auc_awareness_begin",
+                  "Understanding": "auc_understanding_begin",
+                  "Commitments": "auc_commitments_begin",
+               },
+               "protocols": {
+                  "Awareness": [],
+                  "Understanding": [],
+                  "Commitments": [],
+               },
+
+            
+            },
 
             # SHORTCUT: AUC AWARENESS
             "auc_awareness_begin": {
@@ -1198,11 +1217,14 @@ class ModelDecisionMaker:
                "choices": {
                   "mental": "auc_awareness_mental",
                   "war": "auc_awareness_war",
+                  "climate": "auc_awareness_climate",
                },
                "protocols": {
                   "mental": [],
                   "war": [],
+                  "climate": [],
                },
+
             
             },
             "auc_awareness_mental": {
@@ -1210,9 +1232,11 @@ class ModelDecisionMaker:
 
                "choices": {
                   "continue": "auc_awareness_feel_reading_news",
+                  'another news': "auc_awareness_mental"
                },
                "protocols": {
                   "continue": [],
+                  "another news": [],
                },
             
             },
@@ -1222,9 +1246,25 @@ class ModelDecisionMaker:
 
                "choices": {
                   "continue": "auc_awareness_feel_reading_news",
+                  'another news': "auc_awareness_war"
                },
                "protocols": {
                   "continue": [],
+                  "another news": [],
+               },
+            
+            },
+
+            "auc_awareness_climate": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_climate(user_id, app, db_session),
+
+               "choices": {
+                  "continue": "auc_awareness_feel_reading_news",
+                  'another news': "auc_awareness_climate"
+               },
+               "protocols": {
+                  "continue": [],
+                  "another news": [],
                },
             
             },
@@ -1239,8 +1279,8 @@ class ModelDecisionMaker:
                   "feel the compassion energy": "auc_awareness_feel_compassion",
                },
                "protocols": {
-                  "mental": [],
-                  "war": [],
+                  "no feeling": [],
+                  "feel the compassion energy": [],
                },
             
             },
@@ -1332,7 +1372,7 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_begin(user_id, app, db_session),
 
                "choices": {
-                  "continue": "transfer_before_main_node",
+                  "continue": "auc_understanding_research_existing",
                },
                "protocols": {
                  "continue": [],
@@ -1371,8 +1411,8 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_reasonable_solutions(user_id, app, db_session),
 
                "choices": {
-                  "yes": "auc_understanding_go_coc",
-                   "no": "auc_understanding_write_plan",
+                  "yes": "auc_understanding_write_plan",
+                   "no": "auc_understanding_go_coc",
                },
                "protocols": {
                  "yes": [],
@@ -1510,7 +1550,7 @@ class ModelDecisionMaker:
                   "continue": "transfer_before_main_node",
                },
                "protocols": {
-                 "contiunue": [],
+                 "continue": [],
                },
             },
 
@@ -2023,7 +2063,7 @@ class ModelDecisionMaker:
 
         question2 = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return [question[0], question2[0]]
+        return [question, question2]
         return ["Congratulations! You have shown tender compassion. Tender compassion is the first phase of compassion, where you feel sympathy towards the victim. \
                 You feel for the victim, hoping to do something that can alleviate the suffering of the victim immediately. \
                 Now, it is time to bring the compassion to the next level. Please take SAT module later to help you develop foresighted compassion! Foresighted compassion \
@@ -2040,7 +2080,7 @@ class ModelDecisionMaker:
         question2 = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
 
-        return [question[0], question2[0]]
+        return [question, question2]
         return ["Congratulations! You have shown foresighted compassion to your childhood self! Contrary to tender compassion which is an immediate form of sympathy towards victim \
             you have shown foresighted compassion which helps you to think how to help victim long-term! Now, it is time for you to use your compassion \
                 to do meaningful things in the real world! At the MAIN NODE, please go to Awareness, Understanding, Commitments (AUC) to start making impact in the real world!"]
@@ -2063,6 +2103,7 @@ class ModelDecisionMaker:
         return ["You have did great so far! Now let us move to MAIN NODE."]
 
     def coc_start(self, user_id, app, db_session):
+        answer_link = "Please go to http://127.0.0.1:5001/ for Clash of Ideas (COC)."
         answer_template_invite = "You can use the following template when answer the question that you have in mind."
         answer_template = """Template: \n \
                             1. Problem \n \
@@ -2074,7 +2115,8 @@ class ModelDecisionMaker:
                             7. Evaluation metrics on success \n \
                             8. Feeling about compassion"""
 
-        return ["Please go to http://127.0.0.1:5001/ for Clash of Ideas (COC).", answer_template_invite, answer_template]
+        answer_continue = "Clicking continue will bring you back to MAIN NODE. Please go to the link first."
+        return [answer_template_invite, answer_template, answer_link, answer_continue]
 
     # SHORTCUT: ESA
     def esa_last_week(self, user_id, app, db_session):
@@ -2400,67 +2442,183 @@ class ModelDecisionMaker:
         return question
         return ["Amazing! Now let us go back to the question about vulnerable community. "]
     
+
     # SHORTCUT: AUC: Awareness
+
+    def auc_choose_a_u_c(self, user_id, app, db_session):
+        question = "Welcome to AUC. Please select the stage you are in."
+        return question
+
     def auc_awareness_begin(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
     def auc_awareness_mental(self, user_id, app, db_session):
-        pass
+        random_news = self.news_mental.sample().values
+        title = random_news[0][1]
+        content = random_news[0][2]
+        url = random_news[0][3]
+        return [title, content, url]
+
     def auc_awareness_war(self, user_id, app, db_session):
-        pass
+        random_news = self.news_war.sample().values
+        title = random_news[0][1]
+        content = random_news[0][2]
+        url = random_news[0][3]
+        return [title, content, url]
+
+    def auc_awareness_climate(self, user_id, app, db_session):
+        random_news = self.news_climate.sample().values
+        title = random_news[0][1]
+        content = random_news[0][2]
+        url = random_news[0][3]
+        return [title, content, url]
+
+
     def auc_awareness_feel_reading_news(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H02"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_awareness_no_feeling(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_awareness_go_practice_sat(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H04"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_awareness_feel_compassion(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_awareness_quick_test(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H06"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_awareness_explain_compassion_difference(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H07"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_awareness_congrats(self, user_id, app, db_session):
-        pass
+        curr_question_code = "H08"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
 
     # SHORTCUT: AUC: Understanding
     def auc_understanding_begin(self, user_id, app, db_session):
-        pass
+        question =  "Welcome to part 2 of AUC, researching deeper about existing solutions (Understanding)!"
+
+        return question
 
     def auc_understanding_research_existing(self, user_id, app, db_session):
-        pass
+        curr_question_code = "I01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
 
     def auc_understanding_set_deadline(self, user_id, app, db_session):
-        pass
+        curr_question_code = "I02"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_understanding_research_reasonable_solutions(self, user_id, app, db_session):
-        pass
+        curr_question_code = "I03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_understanding_go_coc(self, user_id, app, db_session):
-        pass
+        question = "Time to spark some ideas! Let us go to Clash of Ideas (COC) to discuss ideas with others."
+
+        return question
+
     def auc_understanding_write_plan(self, user_id, app, db_session):
-        pass
+        curr_question_code = "I04"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
 
     # SHORTCUT: AUC: Commitments
 
     def auc_commitments_begin(self, user_id, app, db_session):
-        pass
+        question =  "Welcome to part 3 of AUC, making meaningful actions to practise compassion (Commitments)!"
+        return question
 
     def auc_commitments_follow_through_solutions(self, user_id, app, db_session):
-        pass
+        curr_question_code = "J01"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
 
     def auc_commitments_why_not_follow_through_solutions(self, user_id, app, db_session):
-        pass
+        question =  "May I know why you did not follow through the solution"
+
+        return question
 
     def auc_commitments_reflect_on_understanding(self, user_id, app, db_session):
-        pass
+        curr_question_code = "J02"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+    
     def auc_commitments_find_partners(self, user_id, app, db_session):
-        pass
+        curr_question_code = "J03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_commitments_write_plan(self, user_id, app, db_session):
-        pass
+        question = ["Please write down the following: \n1. Action \n2.Impact \n3.Impact \n4.What can be improved"]
+        return question
+
     def auc_commitments_compassion_energy_compassion(self, user_id, app, db_session):
-        pass
+        curr_question_code = "J04"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
     def auc_commitments_feel_accomplished(self, user_id, app, db_session):
-        pass
+        question = "Do you feel accomplished?"
+
+        return question
+
     def auc_commitments_write_blog_post(self, user_id, app, db_session):
-        pass
+        curr_question_code = "J05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
 
 
 
@@ -2801,6 +2959,7 @@ class ModelDecisionMaker:
                 and current_choice != "main_node"
                 and current_choice != "sat_how_to_help_vulnerable_community"
                 and current_choice != "esa_simple_scenario"
+                and current_choice != "auc_choose_a_u_c"
 
             ):
                 user_choice = user_choice.lower()
