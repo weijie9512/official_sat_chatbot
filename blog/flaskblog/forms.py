@@ -59,7 +59,7 @@ class UpdateAccountForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
-    category = SelectField('Category', choices=[('war', 'war'), ('mental', 'mental'), ('climate', 'climate'),
-                                                ('poverty', 'poverty'), ('healthcare', 'healthcare'), ('homeless', 'homeless'), ('wealth inequality', 'wealth inequality'), 
-                                                ('gender inequality', 'gender inequality')])
+    category = SelectField('Category', choices=[('war', 'War'), ('mental', 'Mental'), ('climate', 'Climate'),
+                                                ('poverty', 'Poverty'), ('homeless', 'Homeless'), ('wealth_inequality', 'Wealth Inequality'), 
+                                                ('gender_inequality', 'Gender Inequality')])
     submit = SubmitField('Post')

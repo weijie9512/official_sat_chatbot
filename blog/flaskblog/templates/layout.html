@@ -13,9 +13,9 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
   {% if title %}
-  <title>Flask Blog - {{ title }}</title>
+  <title>SAT Clash of Ideas (COI) - {{ title }}</title>
   {% else %}
-  <title>Flask Blog</title>
+  <title>SAT Clash of Ideas (COI)</title>
   {% endif %}
 </head>
 
@@ -23,7 +23,7 @@
   <header class="site-header">
     <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
       <div class="container">
-        <a class="navbar-brand mr-4" href="/">Flask Blog</a>
+        <a class="navbar-brand mr-4" href="/">SAT Clash of Ideas (COI)</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
           aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -31,16 +31,23 @@
         <div class="collapse navbar-collapse" id="navbarToggle">
           <div class="navbar-nav mr-auto">
             <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-            <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+            <a class="nav-item nav-link" href="{{ url_for('about') }}">About Compassion</a>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 Category
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" href="{{ url_for('category_war') }}">War</a>
-                <a class="dropdown-item" href="{{ url_for('category_climate') }}">Climate Change</a>
-                <a class="dropdown-item" href="{{ url_for('category_mental') }}">Mental Illness</a>
+                <a class="dropdown-item" href="{{ url_for('category_post', variable='war') }}">War</a>
+                <a class="dropdown-item" href="{{ url_for('category_post', variable='climate') }}">Climate</a>
+                <a class="dropdown-item" href="{{ url_for('category_post', variable='poverty') }}">Poverty</a>
+                <a class="dropdown-item" href="{{ url_for('category_post', variable='homeless') }}">Homeless</a>
+                <a class="dropdown-item" href="{{ url_for('category_post', variable='wealth_inequality') }}">Wealth
+                  Inequality</a>
+                <a class="dropdown-item" href="{{ url_for('category_post', variable='gender_inequality') }}">Gender
+                  Inequality</a>
+                <a class="dropdown-item" href="{{ url_for('category_post', variable='mental') }}">Mental Health</a>
+
               </div>
             </li>
           </div>
@@ -73,19 +80,7 @@
         {% endwith %}
         {% block content %}{% endblock %}
       </div>
-      <div class="col-md-4">
-        <div class="content-section">
-          <h3>Our Sidebar</h3>
-          <p class='text-muted'>You can put any information here you'd like.
-          <ul class="list-group">
-            <li class="list-group-item list-group-item-light">Latest Posts</li>
-            <li class="list-group-item list-group-item-light">Announcements</li>
-            <li class="list-group-item list-group-item-light">Calendars</li>
-            <li class="list-group-item list-group-item-light">etc</li>
-          </ul>
-          </p>
-        </div>
-      </div>
+
     </div>
   </main>
 

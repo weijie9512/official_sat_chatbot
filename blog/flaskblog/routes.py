@@ -144,19 +144,7 @@ def delete_post(post_id):
     return redirect(url_for('home'))
 
 
-@app.route("/war")
-def category_war():
-    posts = Post.query.filter_by(category="war").all()
-    return render_template('home.html', posts=posts)
-
-
-
-@app.route("/climate")
-def category_climate():
-    posts = Post.query.filter_by(category="climate").all()
-    return render_template('home.html', posts=posts)
-
-@app.route("/mental")
-def category_mental():
-    posts = Post.query.filter_by(category="mental").all()
+@app.route("/category/<variable>", methods=["GET", "POST"])
+def category_post(variable):
+    posts = Post.query.filter_by(category=variable).all()
     return render_template('home.html', posts=posts)
