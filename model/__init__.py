@@ -45,7 +45,7 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": "*"}})
 
     from model import models  # noqa
-    from model.models import User, UserModelSession  # noqa
+    from model.models import User, UserModelSession, UserCommitment  # noqa
 
     # @app.route('/')
     # def home():
@@ -96,12 +96,20 @@ def create_app():
                 db.session.add(new_user)
                 db.session.commit()
 
+                new_user_commitment = UserCommitment(user_id=new_user.id)
+                db.session.add(new_user_commitment)
+                db.session.commit()
+
             except:  # noqa
                 db.session.rollback()
 
         try:
             guest_user = User(username="guest", password="guest")
             db.session.add(guest_user)
+            db.session.commit()
+
+            new_user_commitment = UserCommitment(user_id=guest_user.id)
+            db.session.add(new_user_commitment)
             db.session.commit()
         except:  # noqa
             db.session.rollback()
@@ -121,6 +129,8 @@ def create_app():
             new_session = UserModelSession(user_id=user.id)
             db.session.add(new_session)
             db.session.commit()
+
+            
 
             decision_maker.clear_names(user.id)
             decision_maker.initialise_remaining_choices(user.id)
@@ -155,6 +165,7 @@ def create_app():
 
         user = User.query.filter_by(id=user_id).first()
         user_session = UserModelSession.query.filter_by(id=session_id).first()
+        
 
         decision_maker.save_current_choice(
             user_id, input_type, user_choice, user_session, db.session, app

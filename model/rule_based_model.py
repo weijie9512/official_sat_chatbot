@@ -1,7 +1,7 @@
 # CHANGED_HERE
 import nltk
 
-from model.models import UserModelSession, Choice, UserModelRun, Protocol
+from model.models import UserModelSession, Choice, UserModelRun, Protocol, UserCommitment
 from model.classifiers import get_emotion, get_sentence_score
 import pandas as pd
 import numpy as np
@@ -110,6 +110,7 @@ class ModelDecisionMaker:
         self.chosen_personas = {}
         self.datasets = {}
 
+        self.nodes_count_by_user = {}
 
         
 
@@ -526,7 +527,8 @@ class ModelDecisionMaker:
 
                 "choices": {
                     "yes": "check_tender_vs_foresighted_compassion",
-                    "no": "trying_protocol_13",
+                    "no": lambda user_id, db_session, curr_session, app: self.get_count_by_question(user_id, curr_session, "A05"),
+                    #"no": "trying_protocol_13",
                 },
                 "protocols": {
                     "yes": [],
@@ -534,6 +536,18 @@ class ModelDecisionMaker:
                 },
             },
 
+            "user_found_no_compassion_to_child_after_3": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.user_found_no_compassion_to_child_after_3(user_id, app, db_session),
+
+                "choices": {
+                    "continue": "main_node",
+                },
+                "protocols": {
+                    "continue": [],
+                },
+            },
+
+    
 
             "check_tender_vs_foresighted_compassion": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.check_tender_vs_foresighted_compassion(user_id, app, db_session),
@@ -630,6 +644,17 @@ class ModelDecisionMaker:
                 },
             },
 
+            "come_back_tomorrow_before_main_node": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.come_back_tomorrow_before_main_node(user_id, app, db_session),
+                "choices": {
+                    "continue": "main_node",
+                },
+
+                "protocols": {
+                    "continue": [],
+                },
+            },
+
 
 
             ############################### SHORTCUT: COC ############################
@@ -649,8 +674,8 @@ class ModelDecisionMaker:
             "esa_last_week": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_last_week(user_id, app, db_session),
                 "choices": {
-                    "yes": "esa_simple_scenario",
-                    "no": "esa_simple_scenario",
+                    "yes": lambda user_id, db_session, curr_session, app: self.esa_set_count(user_id, db_session, "yes"),
+                    "no": lambda user_id, db_session, curr_session, app: self.esa_set_count(user_id, db_session, "no"),
                 },
 
                 "protocols": {
@@ -659,8 +684,19 @@ class ModelDecisionMaker:
                 },
             },
 
+            "esa_show_statistics": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_show_statistics(user_id),
+                "choices": {
+                    "got it!": "esa_simple_scenario",
+                },
+
+                "protocols": {
+                    "got it!": [],
+                },
+            },
+
             "esa_simple_scenario": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_simple_scenario(user_id, app, db_session),
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_simple_scenario(user_id),
                 "choices": {
                     "I will do my best": "transfer_before_main_node",
                 },
@@ -950,8 +986,8 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.sat_vulnerable_communities_think_deeper(user_id, app, db_session),
 
                "choices": {
-                  "yes": "sat_might_be_anti_social", # part 4
-                  "no": "trying_protocol_15",
+                  "yes": "sat_how_to_help_vulnerable_community", # part 4
+                  "no": lambda user_id, db_session, curr_session, app: self.get_count_by_question(user_id, curr_session, "C09"),
                },
                "protocols": {
                   "yes": [],
@@ -1782,6 +1818,7 @@ class ModelDecisionMaker:
             return sentence
 
 
+
     def get_model_prompt_guess_emotion(self, user_id, app, db_session):
         prev_qs = pd.DataFrame(self.recent_questions[user_id],columns=['sentences'])
         data = self.datasets[user_id]
@@ -2046,6 +2083,9 @@ class ModelDecisionMaker:
         return question
         #return ["Now take a deep breath. Close your eyes, and feel. Do you feel compassionate to your childhood self?"]
 
+    def user_found_no_compassion_to_child_after_3(self, user_id, app, db_session):
+        return ["It's okay! This is exactly why we need to practise more of SAT! Take some time to go through SAT later at MAIN NODE."]
+    
     def check_tender_vs_foresighted_compassion(self, user_id, app, db_session):
         curr_question_code = "A06"
 
@@ -2102,6 +2142,9 @@ class ModelDecisionMaker:
     def transfer_before_main_node(self, user_id, app, db_session):
         return ["You have did great so far! Now let us move to MAIN NODE."]
 
+    def come_back_tomorrow_before_main_node(self, user_id, app, db_session):
+        return ["Maybe today is not working so well.", "Take some rest, and come back to this tomorrow.", "Let us go back to MAIN NODE."]
+
     def coc_start(self, user_id, app, db_session):
         answer_link = "Please go to http://127.0.0.1:5001/ for Clash of Ideas (COC)."
         answer_template_invite = "You can use the following template when answer the question that you have in mind."
@@ -2127,7 +2170,32 @@ class ModelDecisionMaker:
         return question
         return ["Do you follow through last week actions?"]
 
-    def esa_simple_scenario(self, user_id, app, db_session):
+    def esa_set_count(self, user_id, db_session, action):
+        user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
+        if user_commitments == None:
+            user_commitments = UserCommitment(user_id=user_id)
+            db_session.add(user_commitments)
+            db_session.commit()
+
+        if action == "yes":
+            user_commitments.esa_action_count += 1
+        user_commitments.esa_total_count += 1
+        db_session.commit()
+        return "esa_show_statistics"
+
+    def esa_show_statistics(self, user_id):
+        user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
+
+        completed_action = user_commitments.esa_action_count
+        total = user_commitments.esa_total_count
+        completion_perc = completed_action * 100/total
+        statistics_format = ["This is your completion statistics:",
+                            f"Completed: {completed_action}", \
+                              f"Total: {total}", \
+                              f"Percentage of completion: {completion_perc}%"]
+        return statistics_format
+
+    def esa_simple_scenario(self, user_id):
         congrats_user = "Let us start with this week exercise."
         simple_scenarios = ["Before you argue with the next person today, slow down, calm and listen to the person first.\
                             Don’t try to give your reasons immediately, let them know that you will give them a reply the next day. \
@@ -2960,6 +3028,7 @@ class ModelDecisionMaker:
                 and current_choice != "sat_how_to_help_vulnerable_community"
                 and current_choice != "esa_simple_scenario"
                 and current_choice != "auc_choose_a_u_c"
+                and current_choice != "sat_ask_why_not_help_vulnerable_communities"
 
             ):
                 user_choice = user_choice.lower()
@@ -3060,3 +3129,109 @@ class ModelDecisionMaker:
         self.add_and_check_recent_questions_length(user_id, question)
 
         return question
+
+    def get_count_by_question(self, user_id, user_session, question_code):
+        if user_id not in self.nodes_count_by_user.keys():
+            self.nodes_count_by_user[user_id] = {"A05": 0, "A11": 0, "B05": 0, "B09": 0, "C09": 0, "E04": 0}
+        
+        if question_code == "A05":
+            if self.nodes_count_by_user[user_id][question_code] < 2:
+                self.nodes_count_by_user[user_id][question_code] += 1
+                return "trying_protocol_13"
+            else:
+                self.nodes_count_by_user[user_id][question_code] = 0
+                return "user_found_no_compassion_to_child_after_3"
+
+        elif question_code == "A11":
+            if self.nodes_count_by_user[user_id][question_code] < 2:
+                self.nodes_count_by_user[user_id][question_code] += 1
+                return "trying_protocol_13"
+            else:
+                self.nodes_count_by_user[user_id][question_code] = 0
+                return "come_back_tomorrow_before_main_node"
+
+        elif question_code == "B05":
+            if self.nodes_count_by_user[user_id][question_code] < 2:
+                self.nodes_count_by_user[user_id][question_code] += 1
+                return "trying_protocol_1_and_2"
+            else:
+                self.nodes_count_by_user[user_id][question_code] = 0
+                return "come_back_tomorrow_before_main_node"
+
+        elif question_code == "B09":
+            if self.nodes_count_by_user[user_id][question_code] < 2:
+                self.nodes_count_by_user[user_id][question_code] += 1
+                return "trying_protocol_3_and_4_and_5"
+            else:
+                self.nodes_count_by_user[user_id][question_code] = 0
+                return "come_back_tomorrow_before_main_node"
+        
+        elif question_code == "C09":
+            if self.nodes_count_by_user[user_id][question_code] < 2:
+                self.nodes_count_by_user[user_id][question_code] += 1
+                return "trying_protocol_15"
+            else:
+                self.nodes_count_by_user[user_id][question_code] = 0
+                return "sat_might_be_anti_social"
+
+        elif question_code == "E04":
+            if self.nodes_count_by_user[user_id][question_code] < 2:
+                self.nodes_count_by_user[user_id][question_code] += 1
+                return "trying_protocol_17_and_18"
+            else:
+                self.nodes_count_by_user[user_id][question_code] = 0
+                return "come_back_tomorrow_before_main_node"
+
+        return "main_node"
+        """
+        if question_code == "A05":
+            if user_session.a05_count <= 3:
+                user_session.a05_count += 1
+                return "trying_protocol_13"
+            else:
+                user_session.a05_count = 0
+                return "user_found_no_compassion_to_child_after_3"
+
+        elif question_code == "A11":
+            if user_session.a11_count <= 3:
+                user_session.a11_count += 1
+                return "trying_protocol_13"
+            else:
+                user_session.a11_count = 0
+                return "come_back_tomorrow_before_main_node"
+
+        elif question_code == "B05":
+            if user_session.b05_count <= 3:
+                user_session.b05_count += 1
+                return "trying_protocol_1_and_2"
+            else:
+                user_session.b05_count = 0
+                return "come_back_tomorrow_before_main_node"
+
+        elif question_code == "B09":
+            if user_session.b09_count <= 3:
+                user_session.b09_count += 1
+                return "trying_protocol_3_and_4_and_5"
+            else:
+                user_session.b09_count = 0
+                return "come_back_tomorrow_before_main_node"
+        
+        elif question_code == "C09":
+            if user_session.c09_count <= 3:
+                user_session.c09_count += 1
+                return "trying_protocol_15"
+            else:
+                user_session.c09_count = 0
+                return "sat_might_be_anti_social"
+
+        elif question_code == "E04":
+            if user_session.e04_count <= 3:
+                user_session.e04_count += 1
+                return "trying_protocol_17_and_18"
+            else:
+                user_session.e04_count = 0
+                return "come_back_tomorrow_before_main_node"
+
+        return "main_node"
+
+        """
