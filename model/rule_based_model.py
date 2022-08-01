@@ -1284,7 +1284,7 @@ class ModelDecisionMaker:
 
                "choices": {
                   "Go on": "auc_awareness_feel_reading_news",
-                  'Another news': "auc_awareness_news",
+                  'Another news': "auc_awareness_get_news",
                   "Another category": "auc_awareness_begin",
                },
                "protocols": {
