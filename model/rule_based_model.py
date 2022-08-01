@@ -18,19 +18,22 @@ from nltk.corpus import wordnet  # noqa
 class ModelDecisionMaker:
     def __init__(self):
 
-        self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
-        self.robert = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/robert.csv', encoding='ISO-8859-1')
-        self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
-        self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
-        self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
+        #self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
+        #self.robert = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/robert.csv', encoding='ISO-8859-1')
+        #self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
+        #self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
+        #self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
         self.compassion_data = pd.read_excel('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/survey_data/combined_data/sat_data_combined.xlsx')
         self.question_bank = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/question_bank.csv', index_col="questioncode")
         
         self.news_war = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/war.csv')
         self.news_mental = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/mental.csv')
         self.news_climate = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/climate.csv')
-        
-        
+        self.news_poverty = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/poverty.csv')
+        self.news_homeless = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/homeless.csv')
+        self.news_wealth_inequality = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/wealth_inequality.csv')
+        self.news_gender_inequality = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/gender_inequality.csv')
+
         # Titles from workshops (Title 7 adapted to give more information)
         self.PROTOCOL_TITLES = [
             "0: None",
@@ -110,11 +113,15 @@ class ModelDecisionMaker:
         self.chosen_personas = {}
         self.datasets = {}
 
+        
         self.nodes_count_by_user = {}
         self.nodes_direction = {}
-
+        self.news_by_category = {"mental": self.news_mental, "war": self.news_war, "climate": self.news_climate, "poverty": self.news_poverty,  \
+                                "homeless": self.news_homeless, "wealth inequality": self.news_wealth_inequality, "gender inequality": self.news_gender_inequality}
         
-
+        self.no_lowercase_node = ["sat_ask_why_not_help_vulnerable_communities", "auc_awareness_no_feeling", \
+                                "auc_awareness_begin", "auc_awareness_get_news", "auc_awareness_feel_reading_news", \
+                                "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions"]
         
         """
         READ HERE
@@ -553,13 +560,13 @@ class ModelDecisionMaker:
             "check_tender_vs_foresighted_compassion": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.check_tender_vs_foresighted_compassion(user_id, app, db_session),
                 "choices": {
-                    "protect": "shown_tender_compassion",
-                    "grow up": "shown_foresighted_compassion"},
+                    "Protect": "shown_tender_compassion",
+                    "Grow up": "shown_foresighted_compassion"},
 
 
                 "protocols": {
-                    "protect": [],
-                    "grow up": [],
+                    "Protect": [],
+                    "Grow up": [],
                 },
             },
 
@@ -688,11 +695,11 @@ class ModelDecisionMaker:
             "esa_show_statistics": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_show_statistics(user_id),
                 "choices": {
-                    "got it!": "esa_simple_scenario",
+                    "Got it!": "esa_simple_scenario",
                 },
 
                 "protocols": {
-                    "got it!": [],
+                    "Got it!": [],
                 },
             },
 
@@ -827,12 +834,12 @@ class ModelDecisionMaker:
                  "model_prompt": lambda user_id, db_session, curr_session, app: self.sat_go_esa_or_end(user_id, app, db_session),
 
                "choices": {
-                   "esa": "transfer_to_main_node",
-                   "end": "ending_prompt"
+                   "ESA": "transfer_to_main_node",
+                   "End": "ending_prompt"
                },
                "protocols": {
-                  "esa": [],
-                   "end": [],
+                  "ESA": [],
+                   "End": [],
                },
 
             },
@@ -881,12 +888,12 @@ class ModelDecisionMaker:
                  "model_prompt": lambda user_id, db_session, curr_session, app: self.sat_ask_type_of_compassion(user_id, app, db_session),
 
                "choices": {
-                   "tender compassion": "sat_shown_tender_compassion",
-                   "foresighted compassion": "sat_ask_user_if_want_protocol_8",
+                   "Tender Compassion": "sat_shown_tender_compassion",
+                   "Foresighted Compassion": "sat_ask_user_if_want_protocol_8",
                },
                "protocols": {
-                   "tender compassion": [],
-                   "foresighted compassion": [],
+                   "Tender Compassion": [],
+                   "Foresighted Compassion": [],
                },
             },
 
@@ -1250,74 +1257,55 @@ class ModelDecisionMaker:
             # SHORTCUT: AUC AWARENESS
             "auc_awareness_begin": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_begin(user_id, app, db_session),
-
+                
                "choices": {
-                  "mental": "auc_awareness_mental",
-                  "war": "auc_awareness_war",
-                  "climate": "auc_awareness_climate",
+                  "Mental": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "mental"),
+                  "War": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "war"),
+                  "Climate": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "climate"),
+                  "Homeless": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "homeless"),
+                  "Poverty": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "poverty"),
+                  "Gender Inequality": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "gender inequality"),
+                  "Wealth Inequality": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "wealth inequality"),
                },
                "protocols": {
-                  "mental": [],
-                  "war": [],
-                  "climate": [],
+                  "Mental": [],
+                  "War": [],
+                  "Climate": [],
+                  "Homeless": [],
+                  "Poverty": [],
+                  "Gender Inequality": [],
+                  "Wealth Inequality": [],
                },
 
             
             },
-            "auc_awareness_mental": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_mental(user_id, app, db_session),
+            "auc_awareness_get_news": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_get_news(user_id, app, db_session),
 
                "choices": {
-                  "continue": "auc_awareness_feel_reading_news",
-                  'another news': "auc_awareness_mental"
+                  "Go on": "auc_awareness_feel_reading_news",
+                  'Another news': "auc_awareness_news",
+                  "Another category": "auc_awareness_begin",
                },
                "protocols": {
-                  "continue": [],
-                  "another news": [],
+                  "Go on": [],
+                  "Another news": [],
+                  "Another category": [],
                },
             
             },
-
-            "auc_awareness_war": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_war(user_id, app, db_session),
-
-               "choices": {
-                  "continue": "auc_awareness_feel_reading_news",
-                  'another news': "auc_awareness_war"
-               },
-               "protocols": {
-                  "continue": [],
-                  "another news": [],
-               },
-            
-            },
-
-            "auc_awareness_climate": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_climate(user_id, app, db_session),
-
-               "choices": {
-                  "continue": "auc_awareness_feel_reading_news",
-                  'another news': "auc_awareness_climate"
-               },
-               "protocols": {
-                  "continue": [],
-                  "another news": [],
-               },
-            
-            },
-
 
 
             "auc_awareness_feel_reading_news": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_feel_reading_news(user_id, app, db_session),
 
                "choices": {
-                  "no feeling": "auc_awareness_no_feeling",
-                  "feel the compassion energy": "auc_awareness_feel_compassion",
+                  "No feeling": "auc_awareness_no_feeling",
+                  "Feel the compassion energy": "auc_awareness_feel_compassion",
                },
                "protocols": {
-                  "no feeling": [],
-                  "feel the compassion energy": [],
+                  "No feeling": [],
+                  "Feel the compassion energy": [],
                },
             
             },
@@ -1326,12 +1314,12 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_no_feeling(user_id, app, db_session),
 
                "choices": {
-                  "can't relate, the news feel foreign": "auc_awareness_begin",
-                  "can't feel the compassion energy": "auc_awareness_go_practice_sat",
+                  "Can't relate, the news feel foreign": "auc_awareness_begin",
+                  "Can't feel the compassion energy": "auc_awareness_go_practice_sat",
                },
                "protocols": {
-                 "can't relate, the news feel foreign": [],
-                  "can't feel the compassion energy": [],
+                 "Can't relate, the news feel foreign": [],
+                  "Can't feel the compassion energy": [],
                },
             
             },
@@ -1365,16 +1353,16 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_quick_test(user_id, app, db_session),
 
                "choices": {
-                  "reducing own electricity usage": "auc_awareness_explain_compassion_difference",
-                  "reducing own plastic bag usage": "auc_awareness_explain_compassion_difference",
-                  "enforce carbon-neutral policies": "auc_awareness_congrats",
-                  "pressuring government to encourage green-energy related investments": "auc_awareness_congrats",
+                  "Reducing own electricity usage": "auc_awareness_explain_compassion_difference",
+                  "Reducing own plastic bag usage": "auc_awareness_explain_compassion_difference",
+                  "Enforce carbon-neutral policies": "auc_awareness_congrats",
+                  "Pressuring government to encourage green-energy related investments": "auc_awareness_congrats",
                },
                "protocols": {
-                 "reducing own electricity usage": [],
-                  "reducing own plastic bag usage": [],
-                  "enforce carbon-neutral policies": [],
-                  "pressuring government to encourage green-energy related investments": [],
+                 "Reducing own electricity usage": [],
+                  "Reducing own plastic bag usage": [],
+                  "Enforce carbon-neutral policies": [],
+                  "Pressuring government to encourage green-energy related investments": [],
                },
             
             },
@@ -1541,12 +1529,12 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_why_not_follow_through_solutions(user_id, app, db_session),
 
                "choices": {
-                  "not practical": "auc_commitments_reflect_on_understanding",
-                  "lack of discipline": "auc_commitments_find_partners",
+                  "Not practical": "auc_commitments_reflect_on_understanding",
+                  "Lack of discipline": "auc_commitments_find_partners",
                },
                "protocols": {
-                  "not practical": [],
-                  "lack of discipline": [],
+                  "Not practical": [],
+                  "Lack of discipline": [],
                },
             },
 
@@ -1671,7 +1659,7 @@ class ModelDecisionMaker:
         except:  # noqa
             user_response = ""
         self.users_names[user_id] = user_response
-        return "choose_persona"
+        return "greet_user"
         #return "opening_prompt"
 
 
@@ -2559,26 +2547,24 @@ class ModelDecisionMaker:
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
         return question
-    def auc_awareness_mental(self, user_id, app, db_session):
-        random_news = self.news_mental.sample().values
+
+    def auc_awareness_set_news(self, user_id, app, db_session, action):
+        if user_id not in self.nodes_direction.keys():
+            self.nodes_direction[user_id] = {"news_type": action}
+
+        else:
+            self.nodes_direction[user_id] = {"news_type": action}
+        return "auc_awareness_get_news"
+
+    def auc_awareness_get_news(self, user_id, app, db_session):
+        news_type = self.nodes_direction[user_id]["news_type"]
+        df = self.news_by_category[news_type]
+        random_news = df.sample().values
         title = random_news[0][1]
         content = random_news[0][2]
         url = random_news[0][3]
         return [title, content, url]
 
-    def auc_awareness_war(self, user_id, app, db_session):
-        random_news = self.news_war.sample().values
-        title = random_news[0][1]
-        content = random_news[0][2]
-        url = random_news[0][3]
-        return [title, content, url]
-
-    def auc_awareness_climate(self, user_id, app, db_session):
-        random_news = self.news_climate.sample().values
-        title = random_news[0][1]
-        content = random_news[0][2]
-        url = random_news[0][3]
-        return [title, content, url]
 
 
     def auc_awareness_feel_reading_news(self, user_id, app, db_session):
@@ -3152,8 +3138,10 @@ class ModelDecisionMaker:
                 and current_choice != "esa_simple_scenario"
                 and current_choice != "auc_choose_a_u_c"
                 and current_choice != "sat_ask_why_not_help_vulnerable_communities"
+                and current_choice not in self.no_lowercase_node
 
             ):
+                
                 user_choice = user_choice.lower()
             if (
                 current_choice == "suggestions"

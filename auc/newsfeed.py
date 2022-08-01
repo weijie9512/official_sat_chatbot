@@ -23,7 +23,10 @@ class News:
         article_titles = []
         content = []
         url = []
+
+        
         for i, new in enumerate(news['articles']):
+
             article_titles.append(new['title'])
             content.append(new['content'])
             url.append(new['url'])
@@ -47,7 +50,9 @@ class News:
         article_titles = []
         content = []
         url = []
+        print(news)
         for i, new in enumerate(news['articles']):
+            print(new)
             article_titles.append(new['title'])
             content.append(new['content'])
             url.append(new['url'])
@@ -58,7 +63,7 @@ class News:
 if __name__ == "__main__":
     news = News()
 
-    keyword = "climate"
+    keyword = "war"
 
     from_date =   (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
     to_date = datetime.today().strftime('%Y-%m-%d')
