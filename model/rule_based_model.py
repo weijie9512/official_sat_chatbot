@@ -111,6 +111,7 @@ class ModelDecisionMaker:
         self.datasets = {}
 
         self.nodes_count_by_user = {}
+        self.nodes_direction = {}
 
         
 
@@ -1419,16 +1420,31 @@ class ModelDecisionMaker:
 
             "auc_understanding_research_existing": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_existing(user_id, app, db_session),
-
+                
                "choices": {
-                  "yes": "auc_understanding_research_reasonable_solutions",
-                   "no": "auc_understanding_set_deadline",
+                   "yes": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_set_count(user_id, db_session, "yes"), # go to auc_understanding_research_statistics
+                   "no": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_set_count(user_id, db_session, "no"), # go to auc_understanding_research_statistics
+                  #"yes": "auc_understanding_research_reasonable_solutions",
+                  # "no": "auc_understanding_set_deadline",
                },
                "protocols": {
                  "yes": [],
                  "no": [],
                },
 
+            },
+
+            "auc_understanding_research_statistics": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_statistics(user_id),
+
+               "choices": {
+                   # if yes go to "auc_understanding_research_reasonable_solutions", if not go to "auc_understanding_set_deadline"
+                  "continue": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_decide_direction(user_id, db_session), 
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            
             },
 
             "auc_understanding_set_deadline": {
@@ -2600,12 +2616,54 @@ class ModelDecisionMaker:
 
         return question
 
+        
     def auc_understanding_research_existing(self, user_id, app, db_session):
         curr_question_code = "I01"
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
         return question
+
+    def auc_understanding_research_set_count(self, user_id, db_session, action):
+        if user_id not in self.nodes_direction.keys():
+            self.nodes_direction[user_id] = {"I01": "na"}
+
+        user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
+        if user_commitments == None:
+            user_commitments = UserCommitment(user_id=user_id)
+            db_session.add(user_commitments)
+            db_session.commit()
+
+        
+
+        if action == "yes":
+            user_commitments.auc_understanding_action_count += 1
+            self.nodes_direction[user_id]["I01"] = "yes"
+        else:
+            self.nodes_direction[user_id]["I01"] = "no"
+        user_commitments.auc_understanding_total_count += 1
+        db_session.commit()
+        return "auc_understanding_research_statistics"
+
+    def auc_understanding_research_statistics(self, user_id):
+        user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
+
+        completed_action = user_commitments.auc_understanding_action_count
+        total = user_commitments.auc_understanding_total_count
+        completion_perc = completed_action * 100/total
+        statistics_format = ["This is your completion statistics:",
+                            f"Completed: {completed_action}", \
+                              f"Total: {total}", \
+                              f"Percentage of completion: {completion_perc}%"]
+        return statistics_format
+
+    def auc_understanding_research_decide_direction(self, user_id, db_session):
+        if self.nodes_direction[user_id]["I01"] == "yes":
+            return "auc_understanding_research_reasonable_solutions"
+        else:
+            return "auc_understanding_set_deadline"
+
+
 
     def auc_understanding_set_deadline(self, user_id, app, db_session):
         curr_question_code = "I02"
