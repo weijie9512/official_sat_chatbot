@@ -89,7 +89,7 @@ def get_emotion(text):
   with torch.no_grad():
       input_ids = emo_model.tokenizer.encode(text + '</s>', return_tensors='pt')
       output = emo_model.model.generate(input_ids=input_ids, max_length=2)
-      dec = [emo_model.tokenizer.decode(ids) for ids in output]
+      dec = [emo_model.tokenizer.decode(ids, skip_special_tokens=True) for ids in output]
   label = dec[0]
   return label
 

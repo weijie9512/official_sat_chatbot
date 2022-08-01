@@ -121,7 +121,7 @@ class ModelDecisionMaker:
         
         self.no_lowercase_node = ["sat_ask_why_not_help_vulnerable_communities", "auc_awareness_no_feeling", \
                                 "auc_awareness_begin", "auc_awareness_get_news", "auc_awareness_feel_reading_news", \
-                                "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions"]
+                                "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions", "esa_show_statistics", "check_tender_vs_foresighted_compassion"]
         
         """
         READ HERE
@@ -163,8 +163,8 @@ class ModelDecisionMaker:
 
                 "choices": {
                 # CHANGED_HERE/ CHANGED/ REVERT
-                #    "Continue": "opening_prompt"
-                    "Continue": "main_node",
+                    "Continue": "opening_prompt"
+                #    "Continue": "main_node",
                 },
 
                 "protocols": {
@@ -189,10 +189,10 @@ class ModelDecisionMaker:
                 ),
                 "choices": {
                     "yes": {
-                        "Sad": "after_classification_negative",
-                        "Angry": "after_classification_negative",
-                        "Anxious/Scared": "after_classification_negative",
-                        "Happy/Content": "after_classification_positive",
+                        "Sad": "trying_protocol_13",
+                        "Angry": "trying_protocol_13",
+                        "Anxious/Scared": "trying_protocol_13",
+                        "Happy/Content": "transfer_before_main_node",
                     },
                     "no": "check_emotion",
                 },
@@ -207,15 +207,15 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.get_model_prompt_check_emotion(user_id, app, db_session),
 
                 "choices": {
-                    "Sad": lambda user_id, db_session, curr_session, app: self.get_sad_emotion(user_id),
-                    "Angry": lambda user_id, db_session, curr_session, app: self.get_angry_emotion(user_id),
-                    "Anxious/Scared": lambda user_id, db_session, curr_session, app: self.get_anxious_emotion(user_id),
-                    "Happy/Content": lambda user_id, db_session, curr_session, app: self.get_happy_emotion(user_id),
+                    "Sad": "trying_protocol_13",
+                    #"Angry": lambda user_id, db_session, curr_session, app: self.get_angry_emotion(user_id),
+                    #"Anxious/Scared": lambda user_id, db_session, curr_session, app: self.get_anxious_emotion(user_id),
+                    "Happy/Content": "transfer_before_main_node",
                 },
                 "protocols": {
                     "Sad": [],
-                    "Angry": [],
-                    "Anxious/Scared" : [],
+                    #"Angry": [],
+                    #"Anxious/Scared" : [],
                     "Happy/Content": []
                 },
             },
@@ -1844,19 +1844,18 @@ class ModelDecisionMaker:
 
 
     def get_model_prompt_guess_emotion(self, user_id, app, db_session):
-        prev_qs = pd.DataFrame(self.recent_questions[user_id],columns=['sentences'])
-        data = self.datasets[user_id]
-        column = data["All emotions - From what you have said I believe you are feeling {}. Is this correct?"].dropna()
-        my_string = self.get_best_sentence(column, prev_qs)
-        if len(self.recent_questions[user_id]) < 50:
-            self.recent_questions[user_id].append(my_string)
-        else:
-            self.recent_questions[user_id] = []
-            self.recent_questions[user_id].append(my_string)
-        question = my_string.format(self.guess_emotion_predictions[user_id].lower())
-        return self.split_sentence(question)
+        curr_question_code = "A02"
+        emotion = f"From what you have said I believe you are feeling {self.guess_emotion_predictions[user_id].lower()}."
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return [emotion, question]
 
     def get_model_prompt_check_emotion(self, user_id, app, db_session):
+        curr_question_code = "A03"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
         prev_qs = pd.DataFrame(self.recent_questions[user_id],columns=['sentences'])
         data = self.datasets[user_id]
         column = data["All emotions - I am sorry. Please select from the emotions below the one that best reflects what you are feeling:"].dropna()
@@ -2213,6 +2212,7 @@ class ModelDecisionMaker:
         completed_action = user_commitments.esa_action_count
         total = user_commitments.esa_total_count
         completion_perc = completed_action * 100/total
+        completion_perc = "{:.2f}".format(completion_perc)
         statistics_format = ["This is your completion statistics:",
                             f"Completed: {completed_action}", \
                               f"Total: {total}", \
@@ -2248,7 +2248,9 @@ class ModelDecisionMaker:
         return ["Understand that there are 2 types of compassion. Tender compassion is a more commonly seen compassion, where the people generates immediate sympathetic feeling towards some unfortunate events. Another form of compassion, which goes beyond initial sympathetic feeling, and wanted to do more sustainable and systematically to alleviate the situation, would be known as foresighted compassion. Do you need an example?"]
 
     def sat_compassion_difference_example(self, user_id, app, db_session):
-        return ["Examples of difference between tender Compassion and foresighted compassion."]
+        tender_compassion = "Tender compassion is the most direct form of compassion. People with tender compassion will often provide an immediate assistance towards someone who need it immediately, such as giving donations, food, etc."
+        foresighted_compassion = "On the other hand, foresighted compassion is a more holistic, and indirect form of compassion. People with foresighted compassion will spend time think holistically a problem, think about the potential root cause, and aims to solve it systematically."
+        return [tender_compassion, foresighted_compassion]
 
 
     def project_emotion_to_child(self, user_id, app, db_session):
@@ -2657,6 +2659,7 @@ class ModelDecisionMaker:
         completed_action = user_commitments.auc_understanding_action_count
         total = user_commitments.auc_understanding_total_count
         completion_perc = completed_action * 100/total
+        completion_perc = "{:.2f}".format(completion_perc)
         statistics_format = ["This is your completion statistics:",
                             f"Completed: {completed_action}", \
                               f"Total: {total}", \
@@ -2736,6 +2739,7 @@ class ModelDecisionMaker:
         completed_action = user_commitments.auc_commitments_action_count
         total = user_commitments.auc_commitments_total_count
         completion_perc = completed_action * 100/total
+        completion_perc = "{:.2f}".format(completion_perc)
         statistics_format = ["This is your completion statistics:",
                             f"Completed: {completed_action}", \
                               f"Total: {total}", \
@@ -3123,7 +3127,7 @@ class ModelDecisionMaker:
                 current_choice != "suggestions"
                 and current_choice != "event_is_recent"
                 and current_choice != "more_questions"
-                and current_choice != "after_classification_positive"
+                #and current_choice != "after_classification_positive"
                 and current_choice != "user_found_useful"
                 and current_choice != "check_emotion"
                 and current_choice != "new_protocol_better"
@@ -3131,7 +3135,7 @@ class ModelDecisionMaker:
                 and current_choice != "new_protocol_same"
                 and current_choice != "choose_persona"
                 and current_choice != "project_emotion"
-                and current_choice != "after_classification_negative"
+                #and current_choice != "after_classification_negative"
                 and current_choice != "greet_user"
                 and current_choice != "main_node"
                 and current_choice != "sat_how_to_help_vulnerable_community"
@@ -3139,7 +3143,6 @@ class ModelDecisionMaker:
                 and current_choice != "auc_choose_a_u_c"
                 and current_choice != "sat_ask_why_not_help_vulnerable_communities"
                 and current_choice not in self.no_lowercase_node
-
             ):
                 
                 user_choice = user_choice.lower()
