@@ -1515,14 +1515,27 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_follow_through_solutions(user_id, app, db_session),
 
                "choices": {
-                  "yes": "auc_commitments_write_plan",
-                  "no": "auc_commitments_why_not_follow_through_solutions",
+                  "yes": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_set_count(user_id, db_session, "yes"),
+                  "no": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_set_count(user_id, db_session, "no"),
                },
                "protocols": {
                   "yes": [],
                   "no": [],
                },
             },
+
+            "auc_commitments_research_statistics": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_statistics(user_id),
+
+               "choices": {
+                  "continue": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_decide_direction(user_id, db_session),
+               },
+               "protocols": {
+                 "continue": [],
+               },
+            },
+
+
 
              "auc_commitments_why_not_follow_through_solutions": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_why_not_follow_through_solutions(user_id, app, db_session),
@@ -1604,6 +1617,13 @@ class ModelDecisionMaker:
                "protocols": {
                  "continue": [],
                },
+            },
+
+            "ending_prompt": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.get_model_prompt_ending(user_id, app, db_session),
+
+                "choices": {"any": "opening_prompt"},
+                "protocols": {"any": []}
             },
 
 
@@ -2628,19 +2648,19 @@ class ModelDecisionMaker:
         if user_id not in self.nodes_direction.keys():
             self.nodes_direction[user_id] = {"I01": "na"}
 
+
         user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
         if user_commitments == None:
             user_commitments = UserCommitment(user_id=user_id)
             db_session.add(user_commitments)
             db_session.commit()
 
-        
-
         if action == "yes":
             user_commitments.auc_understanding_action_count += 1
             self.nodes_direction[user_id]["I01"] = "yes"
         else:
             self.nodes_direction[user_id]["I01"] = "no"
+
         user_commitments.auc_understanding_total_count += 1
         db_session.commit()
         return "auc_understanding_research_statistics"
@@ -2704,6 +2724,44 @@ class ModelDecisionMaker:
 
         return question
 
+    def auc_commitments_research_set_count(self, user_id, db_session, action):
+        if user_id not in self.nodes_direction.keys():
+            self.nodes_direction[user_id] = {"J01": "na"}
+
+        user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
+        if user_commitments == None:
+            user_commitments = UserCommitment(user_id=user_id)
+            db_session.add(user_commitments)
+            db_session.commit()
+
+        if action == "yes":
+            user_commitments.auc_commitments_action_count += 1
+            self.nodes_direction[user_id]["J01"] = "yes"
+        else:
+            self.nodes_direction[user_id]["J01"] = "no"
+        
+        user_commitments.auc_commitments_total_count += 1
+        db_session.commit()
+        return "auc_commitments_research_statistics"
+
+    def auc_commitments_research_statistics(self, user_id):
+        user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
+
+        completed_action = user_commitments.auc_commitments_action_count
+        total = user_commitments.auc_commitments_total_count
+        completion_perc = completed_action * 100/total
+        statistics_format = ["This is your completion statistics:",
+                            f"Completed: {completed_action}", \
+                              f"Total: {total}", \
+                              f"Percentage of completion: {completion_perc}%"]
+        return statistics_format
+
+    def auc_commitments_research_decide_direction(self, user_id, db_session):
+        if self.nodes_direction[user_id]["J01"] == "yes":
+            return "auc_commitments_write_plan"
+        else:
+            return "auc_commitments_why_not_follow_through_solutions"
+
     def auc_commitments_why_not_follow_through_solutions(self, user_id, app, db_session):
         question =  "May I know why you did not follow through the solution"
 
@@ -2741,6 +2799,13 @@ class ModelDecisionMaker:
 
     def auc_commitments_write_blog_post(self, user_id, app, db_session):
         curr_question_code = "J05"
+
+        question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
+
+        return question
+
+    def get_model_prompt_ending(self, user_id, app, db_session):
+        curr_question_code = "K01"
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
