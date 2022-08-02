@@ -11,29 +11,34 @@ from collections import deque
 import re
 import datetime
 import time
+import os
 
 nltk.download("wordnet")
 from nltk.corpus import wordnet  # noqa
 
 
+
 class ModelDecisionMaker:
     def __init__(self):
+        pwd = os.getcwd()
 
         #self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
         #self.robert = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/robert.csv', encoding='ISO-8859-1')
         #self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
         #self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
         #self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
-        self.compassion_data = pd.read_excel('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/survey_data/combined_data/sat_data_combined.xlsx')
-        self.question_bank = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/question_bank.csv', index_col="questioncode")
+        self.compassion_data = pd.read_excel(f'{pwd}/data/survey_data/combined_data/sat_data_combined.xlsx')
+        self.question_bank = pd.read_csv(f'{pwd}/data/question_bank.csv', index_col="questioncode")
         
-        self.news_war = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/war.csv')
-        self.news_mental = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/mental.csv')
-        self.news_climate = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/climate.csv')
-        self.news_poverty = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/poverty.csv')
-        self.news_homeless = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/homeless.csv')
-        self.news_wealth_inequality = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/wealth_inequality.csv')
-        self.news_gender_inequality = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/data/news_data/gender_inequality.csv')
+        self.news_war = pd.read_csv(f'{pwd}/data/news_data/war.csv')
+        self.news_mental = pd.read_csv(f'{pwd}/data/news_data/mental.csv')
+        self.news_climate = pd.read_csv(f'{pwd}/data/news_data/climate.csv')
+        self.news_poverty = pd.read_csv(f'/{pwd}/data/news_data/poverty.csv')
+        self.news_homeless = pd.read_csv(f'{pwd}/data/news_data/homeless.csv')
+        self.news_wealth_inequality = pd.read_csv(f'{pwd}/data/news_data/wealth_inequality.csv')
+        self.news_gender_inequality = pd.read_csv(f'{pwd}/data/news_data/gender_inequality.csv')
+
+        
 
         # Titles from workshops (Title 7 adapted to give more information)
         self.PROTOCOL_TITLES = [
@@ -2754,7 +2759,7 @@ class ModelDecisionMaker:
 
             compassion_energy_score = "{:.2f}".format(compassion_energy_score)
             return [f'We have estimated that you have shown approximately {compassion_energy_score}% of compassion energy!']
-        
+
         except:
             return ["You have yet to complete ESA and AUC. Complete them at least once, and we will be able to calculate your compassion energy!"]
         

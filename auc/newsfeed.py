@@ -88,7 +88,7 @@ class News:
 if __name__ == "__main__":
     news = News()
 
-    news.save_and_update()
+    #news.save_and_update()
     """
     
     keyword = "climate"
