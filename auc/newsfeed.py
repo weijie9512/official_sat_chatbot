@@ -2,6 +2,8 @@ from newsapi import NewsApiClient
 import pandas as pd
 from datetime import datetime, timedelta
 
+import os
+
 API_KEY = "188b1d9e2e794b0e98cb08db39f8d2e5"
 
 class News:
@@ -15,7 +17,9 @@ class News:
         """
         Getting news 
         """
-        news = self.newsapi.get_top_headlines(q=query,
+
+        formatted_query = ' '.join(query.split("_"))
+        news = self.newsapi.get_top_headlines(q=formatted_query,
                                         category=category,
                                         language='en',
                                         country=country)
@@ -40,7 +44,9 @@ class News:
         """
         Getting news 
         """
-        news = self.newsapi.get_everything(q=query,
+
+        formatted_query = ' '.join(query.split("_"))
+        news = self.newsapi.get_everything(q=formatted_query,
                                         from_param=from_param,
                                         to=to,
                                         language=language,
@@ -50,39 +56,76 @@ class News:
         article_titles = []
         content = []
         url = []
-        print(news)
         for i, new in enumerate(news['articles']):
-            print(new)
-            article_titles.append(new['title'])
-            content.append(new['content'])
+            #article_titles.append(new['title'])
+            #content.append(new['content'])
             url.append(new['url'])
-        return article_titles, content, url
+        #return article_titles, content, url
+        return url
+
+    def save_and_update(self):
+        categories = ["mental", "climate", "war", "poverty", "homeless", "wealth_inequality", "gender_inequality"]
+        #categories = ["war"]
+        for keyword in categories:
+            from_date =   (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
+            to_date = datetime.today().strftime('%Y-%m-%d')
+            print(f"Downloading news of title {keyword} from {from_date} to {to_date}.")
+            #article_titles, content, url = news.get_top_news("ukraine")
+
+           
+            url = news.get_every_news(keyword, from_param=from_date, to=to_date)
+            d = {'url': url}
+            df = pd.DataFrame(d)
+            pwd = os.getcwd()
+            df.to_csv(f"{pwd}/data/news_data/{keyword}.csv")
+
+    def test_run(self):
+        print("test")
+
 
 
 
 if __name__ == "__main__":
     news = News()
 
-    keyword = "war"
+    news.save_and_update()
+    """
+    
+    keyword = "climate"
 
     from_date =   (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
     to_date = datetime.today().strftime('%Y-%m-%d')
     print(f"Downloading news of title {keyword} from {from_date} to {to_date}.")
     #article_titles, content, url = news.get_top_news("ukraine")
 
-
-    article_titles, content, url = news.get_every_news(keyword, from_param=from_date, to=to_date)
-    """
-    print(article_titles)
-    print(len(article_titles))
-    print(type(article_titles))
-    """
-
-
-    d = {'titles':article_titles, 'content':content, 'url': url}
-    df = pd.DataFrame(d)
-
+    try:
+        article_titles, content, url = news.get_every_news(keyword, from_param=from_date, to=to_date)
+        d = {'titles':article_titles, 'content':content, 'url': url}
+        df = pd.DataFrame(d)
  
-    df.to_csv(f"{keyword}.csv")
+        df.to_csv(f"{keyword}.csv")
+    except:
+        article_titles, content, url = news.get_every_news(keyword, from_param=from_date, to=to_date)
+        d = {'url': url}
+        df = pd.DataFrame(d)
+ 
+        df.to_csv(f"{keyword}.csv")
+
+    
+    #print(article_titles)
+    #print(len(article_titles))
+    #print(type(article_titles))
+    
+
+
+    #d = {'titles':article_titles, 'content':content, 'url': url}
+    #df = pd.DataFrame(d)
+    
+    #d = {'url': url}
+    #df = pd.DataFrame(d)
+ 
+    #df.to_csv(f"{keyword}.csv")
+    """
+    
 #
 # print(content)

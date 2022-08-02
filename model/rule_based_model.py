@@ -1,8 +1,9 @@
 # CHANGED_HERE
 import nltk
+from regex import S
 
 from model.models import UserModelSession, Choice, UserModelRun, Protocol, UserCommitment
-from model.classifiers import get_emotion, get_sentence_score
+from model.classifiers import get_emotion, get_sentence_score, empathy_score
 import pandas as pd
 import numpy as np
 import random
@@ -113,7 +114,9 @@ class ModelDecisionMaker:
         self.chosen_personas = {}
         self.datasets = {}
 
-        
+
+        self.user_free_text = {}
+        self.compassion_energy_weightage = {"esa_consistency": 2, "auc_understanding_consistency": 3, "auc_commitments_consistency": 3, "empathetic_score": 2}
         self.nodes_count_by_user = {}
         self.nodes_direction = {}
         self.news_by_category = {"mental": self.news_mental, "war": self.news_war, "climate": self.news_climate, "poverty": self.news_poverty,  \
@@ -1283,12 +1286,12 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_get_news(user_id, app, db_session),
 
                "choices": {
-                  "Go on": "auc_awareness_feel_reading_news",
+                  "Continue": "auc_awareness_feel_reading_news",
                   'Another news': "auc_awareness_get_news",
                   "Another category": "auc_awareness_begin",
                },
                "protocols": {
-                  "Go on": [],
+                  "Continue": [],
                   "Another news": [],
                   "Another category": [],
                },
@@ -1310,11 +1313,36 @@ class ModelDecisionMaker:
             
             },
 
+            "auc_awareness_get_another_news": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_get_another_news(user_id, app, db_session),
+                
+               "choices": {
+                  "Mental": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "mental"),
+                  "War": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "war"),
+                  "Climate": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "climate"),
+                  "Homeless": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "homeless"),
+                  "Poverty": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "poverty"),
+                  "Gender Inequality": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "gender inequality"),
+                  "Wealth Inequality": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "wealth inequality"),
+               },
+               "protocols": {
+                  "Mental": [],
+                  "War": [],
+                  "Climate": [],
+                  "Homeless": [],
+                  "Poverty": [],
+                  "Gender Inequality": [],
+                  "Wealth Inequality": [],
+               },
+
+            
+            },
+
             "auc_awareness_no_feeling": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_no_feeling(user_id, app, db_session),
 
                "choices": {
-                  "Can't relate, the news feel foreign": "auc_awareness_begin",
+                  "Can't relate, the news feel foreign": "auc_awareness_get_another_news",
                   "Can't feel the compassion energy": "auc_awareness_go_practice_sat",
                },
                "protocols": {
@@ -1571,9 +1599,29 @@ class ModelDecisionMaker:
                },
             },
 
+            
+
 
             "auc_commitments_compassion_energy_compassion": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_compassion_energy_compassion(user_id, app, db_session),
+
+               "choices": {
+                  #"continue": "auc_commitments_feel_accomplished",
+                  "open_text": "calculate_compassion_energy",
+                  
+                  
+               },
+               "protocols": {
+                  "open_text": [],
+               },
+            },
+
+
+
+
+
+            "calculate_compassion_energy": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.calculate_compassion_energy(user_id),
 
                "choices": {
                   "continue": "auc_commitments_feel_accomplished",
@@ -1749,9 +1797,9 @@ class ModelDecisionMaker:
     def get_opening_prompt(self, user_id):
         time.sleep(3)
         if self.users_names[user_id] == "":
-            opening_prompt = [f"Hello, this is " + self.chosen_personas[user_id] + ". ", "How are you feeling today?"]
+            opening_prompt = [f"Hello, this is Compassion Chatbot (CC)!" + ". ", "How are you feeling today?"]
         else:
-            opening_prompt = ["Hello " + self.users_names[user_id] + ", this is " + self.chosen_personas[user_id] + ". ", "How are you feeling today?"]
+            opening_prompt = ["Hello " + self.users_names[user_id] + ", this is Compassion Chatbot (CC)!", "How are you feeling today?"]
         return opening_prompt
 
 
@@ -2550,6 +2598,14 @@ class ModelDecisionMaker:
 
         return question
 
+    def auc_awareness_get_another_news(self, user_id, app, db_session):
+        question = "Perhaps we have started too far! Let us try with another category."
+        question2 = "You can also choose back the same category, we will get a different news!"
+
+        return [question, question2]
+        
+    
+
     def auc_awareness_set_news(self, user_id, app, db_session, action):
         if user_id not in self.nodes_direction.keys():
             self.nodes_direction[user_id] = {"news_type": action}
@@ -2562,9 +2618,16 @@ class ModelDecisionMaker:
         news_type = self.nodes_direction[user_id]["news_type"]
         df = self.news_by_category[news_type]
         random_news = df.sample().values
-        title = random_news[0][1]
-        content = random_news[0][2]
-        url = random_news[0][3]
+        msg = "Let us start by reading this news. With compassion in mind, click into the link, read it."
+        try:
+            title = random_news[0][1]
+            content = random_news[0][2]
+            url = random_news[0][3]
+            return [msg, title, content, url]
+        except:
+            url = random_news[0][1]
+            return [msg, url]
+
         return [title, content, url]
 
 
@@ -2653,6 +2716,55 @@ class ModelDecisionMaker:
         db_session.commit()
         return "auc_understanding_research_statistics"
 
+    def save_calculate_compassion_energy_free_text(self, user_id, free_text):
+        pass
+    def calculate_compassion_energy(self, user_id):
+        #(w1 * (consistency_score/100)  + w2 * (compassion_score + 1/3))/  (w1 + w2)
+        user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
+
+        try:
+            completed_action = user_commitments.auc_understanding_action_count
+            total = user_commitments.auc_understanding_total_count
+            auc_understanding_consistency = completed_action/total
+
+            completed_action = user_commitments.auc_understanding_action_count
+            total = user_commitments.auc_understanding_total_count
+            auc_commitments_consistency = completed_action/total
+
+            completed_action = user_commitments.esa_action_count
+            total = user_commitments.esa_total_count
+            esa_consistency = completed_action/total
+
+            print(self.user_choices[user_id]["choices_made"])
+            user_response = self.user_choices[user_id]["choices_made"]["auc_commitments_compassion_energy_compassion"]
+            empathy_level = empathy_score(user_response)
+
+
+            w1 = self.compassion_energy_weightage['esa_consistency']
+            w2 = self.compassion_energy_weightage['auc_understanding_consistency']
+            w3 = self.compassion_energy_weightage['auc_commitments_consistency']
+            w4 = self.compassion_energy_weightage['empathetic_score']
+            w_total = w1 + w2 + w3 + w4
+
+
+            compassion_energy_score = ((w1 * esa_consistency) + \
+                                (w2 * auc_understanding_consistency) + \
+                                (w3 * auc_commitments_consistency) + \
+                                (w4 * (empathy_level + 1)/3)) * 100/ w_total
+
+            compassion_energy_score = "{:.2f}".format(compassion_energy_score)
+            return [f'We have estimated that you have shown approximately {compassion_energy_score}% of compassion energy!']
+        
+        except:
+            return ["You have yet to complete ESA and AUC. Complete them at least once, and we will be able to calculate your compassion energy!"]
+        
+
+
+
+
+
+
+        total = user_commitments.auc_understanding_total_count
     def auc_understanding_research_statistics(self, user_id):
         user_commitments = UserCommitment.query.filter_by(user_id=user_id).first()
 

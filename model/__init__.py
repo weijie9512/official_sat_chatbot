@@ -8,6 +8,8 @@ import os
 import logging
 import datetime
 from dotenv import load_dotenv
+from auc.newsfeed import News
+from flask_apscheduler import APScheduler
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
@@ -50,6 +52,13 @@ def create_app():
     # @app.route('/')
     # def home():
     #     return "ok"
+
+    news = News()
+
+    scheduler = APScheduler()
+    scheduler.add_job(func=news.save_and_update, trigger='interval', id='job', days=1)
+    #scheduler.add_job(func=news.test_run, trigger='interval', id='job', seconds=5)
+    scheduler.start()
 
     @app.route("/api/login", methods=["POST"])
     def login():
@@ -184,6 +193,9 @@ def create_app():
         }
 
     return app
+
+
+
 
 
 from model.rule_based_model import ModelDecisionMaker  # noqa
