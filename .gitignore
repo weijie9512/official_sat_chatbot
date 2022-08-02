@@ -2,3 +2,10 @@
 *.pyc
 /data/ignore
 /data/survey_data/processed_data/paraphrased
+/data/survey_data/labelled_data/processed
+/.ipynb_checkpoints
+/data/compassion_energy
+/hf_models
+/test_trainer
+/jupyter/lightning_logs
+/jupyter/tokenizer
