@@ -12,6 +12,10 @@ from auc.newsfeed import News
 from flask_apscheduler import APScheduler
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+ROOT_DIR = os.path.abspath(os.path.dirname(__file__)).split("/")
+ROOT_DIR = "/".join(ROOT_DIR[:-1])
+#CONFIG_PATH = os.path.join(ROOT_DIR, 'configuration.conf')
+
 load_dotenv(os.path.join(basedir, ".env"))
 
 

@@ -12,6 +12,9 @@ import re
 import datetime
 import time
 import os
+ROOT_DIR = os.path.abspath(os.path.dirname(__file__)).split("/")
+ROOT_DIR = "/".join(ROOT_DIR[:-1])
+#CONFIG_PATH = os.path.join(ROOT_DIR, 'configuration.conf')
 
 nltk.download("wordnet")
 from nltk.corpus import wordnet  # noqa
@@ -20,23 +23,21 @@ from nltk.corpus import wordnet  # noqa
 
 class ModelDecisionMaker:
     def __init__(self):
-        pwd = os.getcwd()
-
         #self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
         #self.robert = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/robert.csv', encoding='ISO-8859-1')
         #self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
         #self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
         #self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
-        self.compassion_data = pd.read_excel(f'{pwd}/data/survey_data/combined_data/sat_data_combined.xlsx')
-        self.question_bank = pd.read_csv(f'{pwd}/data/question_bank.csv', index_col="questioncode")
+        self.compassion_data = pd.read_excel(f'{ROOT_DIR}/data/survey_data/combined_data/sat_data_combined.xlsx')
+        self.question_bank = pd.read_csv(f'{ROOT_DIR}/data/question_bank.csv', index_col="questioncode")
         
-        self.news_war = pd.read_csv(f'{pwd}/data/news_data/war.csv')
-        self.news_mental = pd.read_csv(f'{pwd}/data/news_data/mental.csv')
-        self.news_climate = pd.read_csv(f'{pwd}/data/news_data/climate.csv')
-        self.news_poverty = pd.read_csv(f'/{pwd}/data/news_data/poverty.csv')
-        self.news_homeless = pd.read_csv(f'{pwd}/data/news_data/homeless.csv')
-        self.news_wealth_inequality = pd.read_csv(f'{pwd}/data/news_data/wealth_inequality.csv')
-        self.news_gender_inequality = pd.read_csv(f'{pwd}/data/news_data/gender_inequality.csv')
+        self.news_war = pd.read_csv(f'{ROOT_DIR}/data/news_data/war.csv')
+        self.news_mental = pd.read_csv(f'{ROOT_DIR}/data/news_data/mental.csv')
+        self.news_climate = pd.read_csv(f'{ROOT_DIR}/data/news_data/climate.csv')
+        self.news_poverty = pd.read_csv(f'/{ROOT_DIR}/data/news_data/poverty.csv')
+        self.news_homeless = pd.read_csv(f'{ROOT_DIR}/data/news_data/homeless.csv')
+        self.news_wealth_inequality = pd.read_csv(f'{ROOT_DIR}/data/news_data/wealth_inequality.csv')
+        self.news_gender_inequality = pd.read_csv(f'{ROOT_DIR}/data/news_data/gender_inequality.csv')
 
         
 
@@ -2593,8 +2594,10 @@ class ModelDecisionMaker:
     # SHORTCUT: AUC: Awareness
 
     def auc_choose_a_u_c(self, user_id, app, db_session):
-        question = "Welcome to AUC. Please select the stage you are in."
-        return question
+        question = "Welcome to Awareness, Understanding, Commitments (AUC)."
+        question2 = "The goal of AUC is to improve exposure to relevant world issues through Awareness. With compassion in mind, we will try to understand the issues, obstacles and existing solutions by transferring projection of compassion from childhood self to the issue. We then try to make a commitments by making small actions to help solve the issue."
+        question3 = "If you are ready, please select the stage you are in!"
+        return [question, question2, question3]
 
     def auc_awareness_begin(self, user_id, app, db_session):
         curr_question_code = "H01"

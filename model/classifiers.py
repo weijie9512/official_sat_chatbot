@@ -23,7 +23,8 @@ from transformers import (
     GPT2Tokenizer,
     GPT2LMHeadModel,
     AutoModelWithLMHead,
-    AutoTokenizer
+    AutoTokenizer,
+    AutoModelForSequenceClassification
 )
 from tokenizers import ByteLevelBPETokenizer
 
@@ -60,12 +61,20 @@ args = argparse.Namespace(**args_dict)
 #load emotion classifier (T5 small)
 with torch.no_grad():
     emo_model = T5FineTuner(args)
-    emo_model.load_state_dict(torch.load('T5_small_emotion.pt', map_location=torch.device('cpu')))
+    emo_model.load_state_dict(torch.load('T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
 
-#load empathy classifier (T5 small)
+
+
+
+# load empathy model
+
+emp_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+#emp_model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
+emp_model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
 with torch.no_grad():
-    emp_model = T5FineTuner(args)
-    emp_model.load_state_dict(torch.load('T5_small_empathy.pt', map_location=torch.device('cpu'))) #change path
+    emp_model.load_state_dict(torch.load("bert-base-uncased_full_data.pt", map_location="cpu"))
+
+
 
 #Load pre-trained GPT2 language model weights
 with torch.no_grad():
@@ -99,16 +108,11 @@ def empathy_score(text):
   Computes a discrete numerical empathy score for an utterance (scale 0 to 2)
   '''
   with torch.no_grad():
-      input_ids = emp_model.tokenizer.encode(text + '</s>', return_tensors='pt')
-      output = emp_model.model.generate(input_ids=input_ids, max_length=2)
-      dec = [emp_model.tokenizer.decode(ids) for ids in output]
-  label = dec[0]
-  if label == 'no':
-    score = 0.0
-  elif label == 'weak':
-    score = 1.0
-  else:
-    score = 2.0
+      encoded_input = emp_tokenizer([text], padding=True, truncation=True, return_tensors="pt")
+      output = emp_model(**encoded_input).logits
+      y_pred = np.argmax(output.logits, axis=1)
+      score = y_pred[0]
+
   #normalise between 0 and 1 dividing by the highest possible value:
   return score/2
 
