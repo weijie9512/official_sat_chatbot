@@ -7,7 +7,6 @@ argon2-cffi-bindings==21.2.0
 asttokens==2.0.5
 attrs==22.1.0
 backcall==0.2.0
-backports.zoneinfo==0.2.1
 beautifulsoup4==4.11.1
 bleach==5.0.1
 cachetools==5.2.0
@@ -135,3 +134,4 @@ webencodings==0.5.1
 Werkzeug==2.0.1
 widgetsnbextension==3.6.1
 zipp==3.8.0
+newsapi-python
