@@ -1,4 +1,4 @@
-from newsapi import NewsApiClient
+#from newsapi import NewsApiClient
 from newsapi.newsapi_client import NewsApiClient
 import pandas as pd
 from datetime import datetime, timedelta

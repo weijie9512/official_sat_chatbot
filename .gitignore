@@ -9,5 +9,4 @@
 /test_trainer
 /jupyter/lightning_logs
 /jupyter/tokenizer
-*.pt
 *.db
