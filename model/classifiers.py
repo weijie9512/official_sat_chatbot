@@ -109,7 +109,7 @@ def empathy_score(text):
   '''
   with torch.no_grad():
       encoded_input = emp_tokenizer([text], padding=True, truncation=True, return_tensors="pt")
-      output = emp_model(**encoded_input).logits
+      output = emp_model(**encoded_input)
       y_pred = np.argmax(output.logits, axis=1)
       score = y_pred[0]
 

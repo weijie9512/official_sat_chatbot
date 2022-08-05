@@ -8,7 +8,7 @@ import os
 import logging
 import datetime
 from dotenv import load_dotenv
-from auc.newsfeed import News
+from model.newsfeed import News  # noqa
 from flask_apscheduler import APScheduler
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -161,6 +161,7 @@ def create_app():
             }
         return {"validID": False, "userID": None}
 
+
     @app.route("/api/update_session", methods=["POST"])
     def update_session():
         user_info = json.loads(request.data)["choice_info"]
@@ -194,10 +195,17 @@ def create_app():
             "user_options": output["choices"],
         }
 
+    @app.route("/api/hello_world", methods=["POST", "GET"])
+    def hello_world():
+        print("hello world")
+        return "hello world"
+
+
     return app
 
 
-
+        
+            
 
 
 from model.rule_based_model import ModelDecisionMaker  # noqa

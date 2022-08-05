@@ -15,7 +15,7 @@ import os
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__)).split("/")
 ROOT_DIR = "/".join(ROOT_DIR[:-1])
 #CONFIG_PATH = os.path.join(ROOT_DIR, 'configuration.conf')
-
+print(ROOT_DIR)
 nltk.download("wordnet")
 from nltk.corpus import wordnet  # noqa
 
@@ -28,7 +28,9 @@ class ModelDecisionMaker:
         #self.gabrielle = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/gabrielle.csv', encoding='ISO-8859-1')
         #self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
         #self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
-        self.compassion_data = pd.read_excel(f'{ROOT_DIR}/data/survey_data/combined_data/sat_data_combined.xlsx')
+       
+        print(ROOT_DIR)
+         #self.compassion_data = pd.read_excel(f'{ROOT_DIR}/data/survey_data/combined_data/sat_data_combined.xlsx')
         self.question_bank = pd.read_csv(f'{ROOT_DIR}/data/question_bank.csv', index_col="questioncode")
         
         self.news_war = pd.read_csv(f'{ROOT_DIR}/data/news_data/war.csv')
@@ -1872,7 +1874,7 @@ class ModelDecisionMaker:
         maxscore = 0
         chosen = ''
         # CHANGED_HERE from 5 to 2
-        for row in column.dropna().sample(n=2): #was 25
+        for row in column.dropna().sample(n=5): #was 25
              fitscore = get_sentence_score(row, prev_qs)
              if fitscore > maxscore:
                  maxscore = fitscore
