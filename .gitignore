@@ -10,3 +10,4 @@
 /jupyter/lightning_logs
 /jupyter/tokenizer
 *.db
+*.pt
