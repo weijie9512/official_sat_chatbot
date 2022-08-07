@@ -21,6 +21,7 @@ from nltk.corpus import wordnet  # noqa
 
 
 
+COI_IP_ADDRESS = "http://127.0.0.1:5001"
 class ModelDecisionMaker:
     def __init__(self):
         #self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
@@ -29,8 +30,7 @@ class ModelDecisionMaker:
         #self.arman = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/arman.csv', encoding='ISO-8859-1')
         #self.olivia = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/olivia.csv', encoding='ISO-8859-1')
        
-        print(ROOT_DIR)
-         #self.compassion_data = pd.read_excel(f'{ROOT_DIR}/data/survey_data/combined_data/sat_data_combined.xlsx')
+        self.compassion_data = pd.read_excel(f'{ROOT_DIR}/data/survey_data/combined_data/sat_data_combined.xlsx')
         self.question_bank = pd.read_csv(f'{ROOT_DIR}/data/question_bank.csv', index_col="questioncode")
         
         self.news_war = pd.read_csv(f'{ROOT_DIR}/data/news_data/war.csv')
@@ -130,7 +130,8 @@ class ModelDecisionMaker:
         self.news_by_category = {"mental": self.news_mental, "war": self.news_war, "climate": self.news_climate, "poverty": self.news_poverty,  \
                                 "homeless": self.news_homeless, "wealth inequality": self.news_wealth_inequality, "gender inequality": self.news_gender_inequality}
         
-        self.no_lowercase_node = ["sat_ask_why_not_help_vulnerable_communities", "auc_awareness_no_feeling", \
+        self.no_lowercase_node = ["greet_user2", "sat_ask_why_not_help_vulnerable_communities", "auc_awareness_no_feeling", \
+                                "esa_last_week", "coi_start", "coi_start2a", "coi_start2b","sat_ask_type_of_compassion",
                                 "auc_awareness_begin", "auc_awareness_get_news", "auc_awareness_feel_reading_news", \
                                 "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions", "esa_show_statistics", "check_tender_vs_foresighted_compassion"]
         
@@ -174,12 +175,27 @@ class ModelDecisionMaker:
 
                 "choices": {
                 # CHANGED_HERE/ CHANGED/ REVERT
-                    "Continue": "opening_prompt"
+                    "Okay, but what is the goal?": "greet_user2"
                 #    "Continue": "main_node",
                 },
 
                 "protocols": {
+                   "Okay, but what is the goal?": [],
+               },
+
+            },
+
+            "greet_user2": { 
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.greet_user2(user_id),
+
+                "choices": {
+                    "Continue": "opening_prompt",
+                    "I am very familiar, bring me to the MAIN NODE": "main_node",
+                },
+
+                "protocols": {
                    "Continue": [],
+                   "I am very familiar, bring me to the MAIN NODE": [],
                },
 
             },
@@ -541,6 +557,7 @@ class ModelDecisionMaker:
                 "protocols": {"continue": []},
             },
 
+
             "user_found_compassion_to_child": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.get_model_prompt_found_compassion_to_child(user_id, app, db_session),
 
@@ -626,7 +643,7 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.main_node(user_id, app, db_session),
                 "choices": {
                     "Awareness, Understanding, Commitments (AUC)": "auc_choose_a_u_c",
-                    "Clash of Ideas (COC)": "coc_start",
+                    "Clash of Ideas (COI)": "coi_start",
                     "Everyday Simple Action (ESA)": "esa_last_week",
                     "SAT protocols (SAT)": "sat_compassion_start", 
                     "End the session": "ending_prompt",
@@ -634,7 +651,7 @@ class ModelDecisionMaker:
 
                 "protocols": {
                     "Awareness, Understanding, Commitments (AUC)": [],
-                    "Clash of Ideas (COC)": [],
+                    "Clash of Ideas (COI)": [],
                     "Everyday Simple Action (ESA)": [],
                     "SAT protocols (SAT)": [], 
                     "End the session": [],
@@ -676,15 +693,39 @@ class ModelDecisionMaker:
 
 
 
-            ############################### SHORTCUT: COC ############################
-            "coc_start": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.coc_start(user_id, app, db_session),
+            ############################### SHORTCUT: coi ############################
+            "coi_start": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.coi_start(user_id, app, db_session),
                 "choices": {
-                    "continue": "transfer_before_main_node",
+                    "Show me the template and link!": "coi_start2a",
+                    "Show me the link!": "coi_start2b",
                 },
 
                 "protocols": {
-                    "continue": [],
+                    "Show me the template and link!": [],
+                    "Show me the link!": [],
+                },
+            },
+
+            "coi_start2a": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.coi_start2a(user_id, app, db_session),
+                "choices": {
+                    "I'm inspired, bring me back to MAIN NODE!": "transfer_before_main_node",
+                },
+
+                "protocols": {
+                    "I'm inspired, bring me back to MAIN NODE!": [],
+                },
+            },
+
+            "coi_start2b": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.coi_start2b(user_id, app, db_session),
+                "choices": {
+                    "I'm inspired, bring me back to MAIN NODE!": "transfer_before_main_node",
+                },
+
+                "protocols": {
+                    "I'm inspired, bring me back to MAIN NODE!": [],
                 },
             },
 
@@ -693,13 +734,15 @@ class ModelDecisionMaker:
             "esa_last_week": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.esa_last_week(user_id, app, db_session),
                 "choices": {
-                    "yes": lambda user_id, db_session, curr_session, app: self.esa_set_count(user_id, db_session, "yes"),
-                    "no": lambda user_id, db_session, curr_session, app: self.esa_set_count(user_id, db_session, "no"),
+                    "Yes, I feel great after following through the actions last week!": lambda user_id, db_session, curr_session, app: self.esa_set_count(user_id, db_session, "yes"),
+                    "No, unfortunately I couldn't follow through actions last week.": lambda user_id, db_session, curr_session, app: self.esa_set_count(user_id, db_session, "no"),
+                    "This is my first time doing it!": "esa_simple_scenario",
                 },
 
                 "protocols": {
-                    "yes": [],
-                    "no": [],
+                    "Yes, I feel great after following through the actions last week!": [],
+                    "No, unfortunately I couldn't follow through actions last week.": [],
+                    "This is my first time doing it!": [],
                 },
             },
 
@@ -992,7 +1035,7 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.sat_ask_if_help_vulnerable_communities2(user_id, app, db_session),
 
                "choices": {
-                  "yes": "", # part 4
+                  "yes": "sat_how_to_help_vulnerable_community", # part 4
                   "no": "trying_protocol_15",
                },
                "protocols": {
@@ -1128,7 +1171,7 @@ class ModelDecisionMaker:
                  "model_prompt": lambda user_id, db_session, curr_session, app: self.sat_might_be_anti_social(user_id, app, db_session),
 
                "choices": {
-                  "continue": "sat_imagine_self_vulnerable",
+                  "continue": "sat_personal_resentment",
                },
                "protocols": {
                   "continue": [],
@@ -1488,7 +1531,7 @@ class ModelDecisionMaker:
 
                "choices": {
                   "yes": "auc_understanding_write_plan",
-                   "no": "auc_understanding_go_coc",
+                   "no": "auc_understanding_go_coi",
                },
                "protocols": {
                  "yes": [],
@@ -1497,8 +1540,8 @@ class ModelDecisionMaker:
 
             },
 
-            "auc_understanding_go_coc": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_go_coc(user_id, app, db_session),
+            "auc_understanding_go_coi": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_go_coi(user_id, app, db_session),
 
                "choices": {
                   "continue": "transfer_before_main_node",
@@ -1773,32 +1816,14 @@ class ModelDecisionMaker:
     # Takes next item in queue, or moves on to suggestions
     # if all have been checked
 
-    def get_kai(self, user_id):
-       self.chosen_personas[user_id] = "Kai"
-       self.datasets[user_id] = self.kai
-       return "greet_user"
-    def get_robert(self, user_id):
-       self.chosen_personas[user_id] = "Robert"
-       self.datasets[user_id] = self.robert
-       return "greet_user"
-    def get_gabrielle(self, user_id):
-       self.chosen_personas[user_id] = "Gabrielle"
-       self.datasets[user_id] = self.gabrielle
-       return "greet_user"
-    def get_arman(self, user_id):
-       self.chosen_personas[user_id] = "Arman"
-       self.datasets[user_id] = self.arman
-       return "greet_user"
-    def get_olivia(self, user_id):
-       self.chosen_personas[user_id] = "Olivia"
-       self.datasets[user_id] = self.olivia
-       return "greet_user"
-
 
     def greet_user(self, user_id):
         greet_user = ["Hello! Welcome to the compassion chatbot!, This chatbot is used to develop foresighted compassion. Compassion is very important, and the absence of compassion can lead to severe consequence.",  \
-                    "One example of lack of universal compassion is the Russian-Ukrainian war, where the leaders that do not have compassion took drastic actions and led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential.", \
-                    "Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by projection of compassion from childhood self to larger issues like war.", \
+                    "One example of lack of universal compassion is the Russian-Ukrainian war, where the leaders that do not have compassion took drastic actions and led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
+        return greet_user
+
+    def greet_user2(self, user_id):
+        greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by projection of compassion from childhood self to larger issues like war.", \
                     "More specifically, this chatbot aims to develop foresighted compassion.  Contrary to tender compassion, foresighted compassion aims to develop compassionate traits within you to develop sustainable, and actionable items for you. "]
         return greet_user
 
@@ -2157,9 +2182,10 @@ class ModelDecisionMaker:
     def get_model_prompt_found_compassion_to_child(self, user_id, app, db_session):
         curr_question_code = "A05"
 
+        additional_prompt = "Now, project your compassion towards your chilldhood self."
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return [additional_prompt, question]
         #return ["Now take a deep breath. Close your eyes, and feel. Do you feel compassionate to your childhood self?"]
 
     def user_found_no_compassion_to_child_after_3(self, user_id, app, db_session):
@@ -2224,21 +2250,25 @@ class ModelDecisionMaker:
     def come_back_tomorrow_before_main_node(self, user_id, app, db_session):
         return ["Maybe today is not working so well.", "Take some rest, and come back to this tomorrow.", "Let us go back to MAIN NODE."]
 
-    def coc_start(self, user_id, app, db_session):
-        answer_link = "Please go to http://127.0.0.1:5001/ for Clash of Ideas (COC)."
-        answer_template_invite = "You can use the following template when answer the question that you have in mind."
-        answer_template = """Template: \n \
-                            1. Problem \n \
-                            2. Existing solutions \n \
-                            3. Proposed solutions \n \
-                            4. Feasibility \n \
-                            5. Resources required \n \
-                            6. Commitments from yourself \n \ 
-                            7. Evaluation metrics on success \n \
-                            8. Feeling about compassion"""
+    def coi_start(self, user_id, app, db_session):
+        coi_welcome = "Welcome to Clash of Ideas (COI)!"
+        coi_msg = "COI is an alternative blog specifically created to allow anonymous exchange of ideas. "
+        coi_msg2 = "The main idea is to learn from other people, and not judge others' ideas and actions no matter how small or big, and hence, no comment is allowed."
+        return [coi_welcome, coi_msg, coi_msg2]
 
-        answer_continue = "Clicking continue will bring you back to MAIN NODE. Please go to the link first."
-        return [answer_template_invite, answer_template, answer_link, answer_continue]
+
+    def coi_start2a(self, user_id, app_db, session):
+        answer_template_invite = "You can use the following template when answer the question that you have in mind."
+        answer_template = """Problem -> Existing solutions -> Proposed solutions -> Feasibility \
+                         -> Resources required -> Commitments from yourself -> Evaluation metrics on success -> Feeling about compassion"""
+        answer_link = f"Please go to {COI_IP_ADDRESS} for Clash of Ideas (COI)."
+        return [answer_template_invite, answer_template, answer_link]
+        
+    def coi_start2b(self, user_id, app, db_session):
+        answer_link = f"Please go to {COI_IP_ADDRESS} for Clash of Ideas (COI)."
+        return [answer_link]
+
+
 
     # SHORTCUT: ESA
     def esa_last_week(self, user_id, app, db_session):
@@ -2269,7 +2299,7 @@ class ModelDecisionMaker:
         total = user_commitments.esa_total_count
         completion_perc = completed_action * 100/total
         completion_perc = "{:.2f}".format(completion_perc)
-        statistics_format = ["This is your completion statistics:",
+        statistics_format = ["Allow me to share your completion statistics!",
                             f"Completed: {completed_action}", \
                               f"Total: {total}", \
                               f"Percentage of completion: {completion_perc}%"]
@@ -2305,8 +2335,9 @@ class ModelDecisionMaker:
 
     def sat_compassion_difference_example(self, user_id, app, db_session):
         tender_compassion = "Tender compassion is the most direct form of compassion. People with tender compassion will often provide an immediate assistance towards someone who need it immediately, such as giving donations, food, etc."
+        tender_compassion2 = "Tender compassion has been researched extensively by Professor Paul Gilbert. You can look it up to learn more about the amazing work done by Professor Gilbert."
         foresighted_compassion = "On the other hand, foresighted compassion is a more holistic, and indirect form of compassion. People with foresighted compassion will spend time think holistically a problem, think about the potential root cause, and aims to solve it systematically."
-        return [tender_compassion, foresighted_compassion]
+        return [tender_compassion, tender_compassion2, foresighted_compassion]
 
 
     def project_emotion_to_child(self, user_id, app, db_session):
@@ -2782,7 +2813,7 @@ class ModelDecisionMaker:
         total = user_commitments.auc_understanding_total_count
         completion_perc = completed_action * 100/total
         completion_perc = "{:.2f}".format(completion_perc)
-        statistics_format = ["This is your completion statistics:",
+        statistics_format = ["Allow me to share your completion statistics!",
                             f"Completed: {completed_action}", \
                               f"Total: {total}", \
                               f"Percentage of completion: {completion_perc}%"]
@@ -2810,8 +2841,8 @@ class ModelDecisionMaker:
 
         return question
 
-    def auc_understanding_go_coc(self, user_id, app, db_session):
-        question = "Time to spark some ideas! Let us go to Clash of Ideas (COC) to discuss ideas with others."
+    def auc_understanding_go_coi(self, user_id, app, db_session):
+        question = "Time to spark some ideas! Let us go to Clash of Ideas (COI) to discuss ideas with others."
 
         return question
 
@@ -2862,7 +2893,7 @@ class ModelDecisionMaker:
         total = user_commitments.auc_commitments_total_count
         completion_perc = completed_action * 100/total
         completion_perc = "{:.2f}".format(completion_perc)
-        statistics_format = ["This is your completion statistics:",
+        statistics_format = ["Allow me to share your completion statistics!",
                             f"Completed: {completed_action}", \
                               f"Total: {total}", \
                               f"Percentage of completion: {completion_perc}%"]
@@ -2894,8 +2925,9 @@ class ModelDecisionMaker:
         return question
 
     def auc_commitments_write_plan(self, user_id, app, db_session):
-        question = ["Please write down the following: \n1. Action \n2.Impact \n3.Impact \n4.What can be improved"]
-        return question
+        question = "Please write down the following:"
+        action = "Action -> Impact -> What can be improved."
+        return [question, action]
 
     def auc_commitments_compassion_energy_compassion(self, user_id, app, db_session):
         curr_question_code = "J04"

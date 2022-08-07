@@ -36,8 +36,8 @@ class ActionProvider {
     // const uri = `/api/login`
 
     // URL to use for local requests
-    //const uri = `http://18.170.14.50:5000/api/login`
-    const uri = `http://localhost:5000/api/login`
+    const uri = `http://18.170.14.50:5000/api/login`
+    //const uri = `http://localhost:5000/api/login`
     let user_info = {
       username: username,
       password: password
@@ -89,8 +89,8 @@ class ActionProvider {
     // const uri = `/api/update_session`
 
     // URL to use for local requests
-    // const uri = `http://18.170.14.50:5000/api/update_session`;
-    const uri = `http://localhost:5000/api/update_session`;
+    const uri = `http://18.170.14.50:5000/api/update_session`;
+    //const uri = `http://localhost:5000/api/update_session`;
     const response = await axios.post(uri, {
       choice_info
     })

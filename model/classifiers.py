@@ -61,8 +61,11 @@ args = argparse.Namespace(**args_dict)
 #load emotion classifier (T5 small)
 with torch.no_grad():
     emo_model = T5FineTuner(args)
-    emo_model.load_state_dict(torch.load('T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
-
+    try:
+      emo_model.load_state_dict(torch.load('T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
+    except:
+      emo_model.load_state_dict(torch.load('model/T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
+    
 
 
 
@@ -72,8 +75,12 @@ emp_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 #emp_model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
 emp_model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
 with torch.no_grad():
-    emp_model.load_state_dict(torch.load("bert-base-uncased_full_data.pt", map_location="cpu"))
-
+    try:
+      emp_model.load_state_dict(torch.load("bert-base-uncased_full_data.pt", map_location="cpu"))
+    except:
+      emp_model.load_state_dict(torch.load("model/bert-base-uncased_full_data.pt", map_location="cpu"))
+    
+    
 
 
 #Load pre-trained GPT2 language model weights
