@@ -64,7 +64,7 @@ with torch.no_grad():
     try:
       emo_model.load_state_dict(torch.load('T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
     except:
-      emo_model.load_state_dict(torch.load('model/T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
+      emo_model.load_state_dict(torch.load('model/T5_small_emotion_stable.pt', map_location=torch.device('cpu')), strict=False)
     
 
 
@@ -78,7 +78,7 @@ with torch.no_grad():
     try:
       emp_model.load_state_dict(torch.load("bert-base-uncased_full_data.pt", map_location="cpu"))
     except:
-      emp_model.load_state_dict(torch.load("model/bert-base-uncased_full_data.pt", map_location="cpu"))
+      emp_model.load_state_dict(torch.load("model/bert-base-uncased_full_data_stable.pt", map_location="cpu"))
     
     
 
