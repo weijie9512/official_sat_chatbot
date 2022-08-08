@@ -1818,12 +1818,12 @@ class ModelDecisionMaker:
 
 
     def greet_user(self, user_id):
-        greet_user = ["Hello! Welcome to the compassion chatbot!, This chatbot is used to develop foresighted compassion. Compassion is very important, and the absence of compassion can lead to severe consequence.",  \
+        greet_user = ["Hello! Welcome to the compassion chatbot!, This chatbot is used to develop foresighted compassion. Compassion is very important, and the absence of compassion can lead to severe consequences.",  \
                     "One example of lack of universal compassion is the Russian-Ukrainian war, where the leaders that do not have compassion took drastic actions and led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
         return greet_user
 
     def greet_user2(self, user_id):
-        greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by projection of compassion from childhood self to larger issues like war.", \
+        greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by the projection of compassion from childhood self to larger issues like war.", \
                     "More specifically, this chatbot aims to develop foresighted compassion.  Contrary to tender compassion, foresighted compassion aims to develop compassionate traits within you to develop sustainable, and actionable items for you. "]
         return greet_user
 
@@ -2182,14 +2182,14 @@ class ModelDecisionMaker:
     def get_model_prompt_found_compassion_to_child(self, user_id, app, db_session):
         curr_question_code = "A05"
 
-        additional_prompt = "Now, project your compassion towards your chilldhood self."
+        additional_prompt = "Now, project your compassion towards your childhood self."
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
         return [additional_prompt, question]
         #return ["Now take a deep breath. Close your eyes, and feel. Do you feel compassionate to your childhood self?"]
 
     def user_found_no_compassion_to_child_after_3(self, user_id, app, db_session):
-        return ["It's okay! This is exactly why we need to practise more of SAT! Take some time to go through SAT later at MAIN NODE."]
+        return ["It's okay! This is exactly why we need to practise more on SAT! Take some time to go through SAT later at MAIN NODE."]
     
     def check_tender_vs_foresighted_compassion(self, user_id, app, db_session):
         curr_question_code = "A06"
@@ -2245,20 +2245,20 @@ class ModelDecisionMaker:
         return ["Congratulations! Now let us move to MAIN NODE."]
 
     def transfer_before_main_node(self, user_id, app, db_session):
-        return ["You have did great so far! Now let us move to MAIN NODE."]
+        return ["You have done great so far! Now let us move to MAIN NODE."]
 
     def come_back_tomorrow_before_main_node(self, user_id, app, db_session):
         return ["Maybe today is not working so well.", "Take some rest, and come back to this tomorrow.", "Let us go back to MAIN NODE."]
 
     def coi_start(self, user_id, app, db_session):
         coi_welcome = "Welcome to Clash of Ideas (COI)!"
-        coi_msg = "COI is an alternative blog specifically created to allow anonymous exchange of ideas. "
+        coi_msg = "COI is an alternative blog specifically created to allow the anonymous exchange of ideas. "
         coi_msg2 = "The main idea is to learn from other people, and not judge others' ideas and actions no matter how small or big, and hence, no comment is allowed."
         return [coi_welcome, coi_msg, coi_msg2]
 
 
     def coi_start2a(self, user_id, app_db, session):
-        answer_template_invite = "You can use the following template when answer the question that you have in mind."
+        answer_template_invite = "You can use the following template when answering the question that you have in mind."
         answer_template = """Problem -> Existing solutions -> Proposed solutions -> Feasibility \
                          -> Resources required -> Commitments from yourself -> Evaluation metrics on success -> Feeling about compassion"""
         answer_link = f"Please go to {COI_IP_ADDRESS} for Clash of Ideas (COI)."
@@ -2306,12 +2306,12 @@ class ModelDecisionMaker:
         return statistics_format
 
     def esa_simple_scenario(self, user_id):
-        congrats_user = "Let us start with this week exercise."
+        congrats_user = "Let us start with this week's exercise."
         simple_scenarios = ["Before you argue with the next person today, slow down, calm and listen to the person first.\
                             Don’t try to give your reasons immediately, let them know that you will give them a reply the next day. \
                             Take your time, think about it before you sleep, and give a proper response the next day", \
                             "Have you judged someone when they said or write something recently? This time, try not to judge, try to accept the person as who he/she is.",\
-                            "If you are busy today, before you brush someone off, try to look into their eyes, listen attentively, and make them feel your presence. "]
+                            "If you are busy, before you brush someone off today, try to look into their eyes, listen attentively, and make them feel your presence. "]
         chosen_scenario =  random.choice(simple_scenarios)
         msg = congrats_user + chosen_scenario
         return self.split_sentence(msg)
@@ -2334,9 +2334,9 @@ class ModelDecisionMaker:
         return ["Understand that there are 2 types of compassion. Tender compassion is a more commonly seen compassion, where the people generates immediate sympathetic feeling towards some unfortunate events. Another form of compassion, which goes beyond initial sympathetic feeling, and wanted to do more sustainable and systematically to alleviate the situation, would be known as foresighted compassion. Do you need an example?"]
 
     def sat_compassion_difference_example(self, user_id, app, db_session):
-        tender_compassion = "Tender compassion is the most direct form of compassion. People with tender compassion will often provide an immediate assistance towards someone who need it immediately, such as giving donations, food, etc."
+        tender_compassion = "Tender compassion is the most direct form of compassion. People with tender compassion will often provide immediate assistance towards someone who needs it immediately, such as giving donations, food, etc."
         tender_compassion2 = "Tender compassion has been researched extensively by Professor Paul Gilbert. You can look it up to learn more about the amazing work done by Professor Gilbert."
-        foresighted_compassion = "On the other hand, foresighted compassion is a more holistic, and indirect form of compassion. People with foresighted compassion will spend time think holistically a problem, think about the potential root cause, and aims to solve it systematically."
+        foresighted_compassion = "On the other hand, foresighted compassion is a more holistic, and indirect form of compassion. People with foresighted compassion will spend time thinking holistically about a problem, thinking about the potential root cause, and aims to solve it systematically."
         return [tender_compassion, tender_compassion2, foresighted_compassion]
 
 
@@ -2628,7 +2628,7 @@ class ModelDecisionMaker:
 
     def auc_choose_a_u_c(self, user_id, app, db_session):
         question = "Welcome to Awareness, Understanding, Commitments (AUC)."
-        question2 = "The goal of AUC is to improve exposure to relevant world issues through Awareness. With compassion in mind, we will try to understand the issues, obstacles and existing solutions by transferring projection of compassion from childhood self to the issue. We then try to make a commitments by making small actions to help solve the issue."
+        question2 = "The goal of AUC is to improve exposure to relevant world issues through Awareness. With compassion in mind, we will try to understand the issues, obstacles and existing solutions by transferring the projection of compassion from childhood self to the issue. We then try to make a commitment by making small actions to help solve the issue."
         question3 = "If you are ready, please select the stage you are in!"
         return [question, question2, question3]
 
@@ -2641,7 +2641,7 @@ class ModelDecisionMaker:
 
     def auc_awareness_get_another_news(self, user_id, app, db_session):
         question = "Perhaps we have started too far! Let us try with another category."
-        question2 = "You can also choose back the same category, we will get a different news!"
+        question2 = "You can also choose back the same category, we will get different news!"
 
         return [question, question2]
         
@@ -2659,7 +2659,7 @@ class ModelDecisionMaker:
         news_type = self.nodes_direction[user_id]["news_type"]
         df = self.news_by_category[news_type]
         random_news = df.sample().values
-        msg = "Let us start by reading this news. With compassion in mind, click into the link, read it."
+        msg = "Let us start by reading this news. With compassion in mind, click on the link, and read it."
         try:
             title = random_news[0][1]
             content = random_news[0][2]
@@ -2906,7 +2906,7 @@ class ModelDecisionMaker:
             return "auc_commitments_why_not_follow_through_solutions"
 
     def auc_commitments_why_not_follow_through_solutions(self, user_id, app, db_session):
-        question =  "May I know why you did not follow through the solution"
+        question =  "May I know why you did not follow through with the solution?"
 
         return question
 
