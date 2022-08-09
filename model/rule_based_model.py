@@ -216,9 +216,9 @@ class ModelDecisionMaker:
                 ),
                 "choices": {
                     "yes": {
-                        "Sad": "trying_protocol_13",
-                        "Angry": "trying_protocol_13",
-                        "Anxious/Scared": "trying_protocol_13",
+                        "Sad": "trying_protocol_9",
+                        "Angry": "trying_protocol_9",
+                        "Anxious/Scared": "trying_protocol_9",
                         "Happy/Content": "transfer_before_main_node",
                     },
                     "no": "check_emotion",
@@ -234,7 +234,7 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.get_model_prompt_check_emotion(user_id, app, db_session),
 
                 "choices": {
-                    "Sad": "trying_protocol_13",
+                    "Sad": "trying_protocol_9",
                     #"Angry": lambda user_id, db_session, curr_session, app: self.get_angry_emotion(user_id),
                     #"Anxious/Scared": lambda user_id, db_session, curr_session, app: self.get_anxious_emotion(user_id),
                     "Happy/Content": "transfer_before_main_node",
@@ -255,7 +255,7 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.get_model_overcome_negative_emotions(user_id, app, db_session),
                 
                 "choices": {
-                    self.PROTOCOL_TITLES[13]: "trying_protocol_13",
+                    self.PROTOCOL_TITLES[13]: "trying_protocol_9",
                 },
 
                 "protocols": {
@@ -550,8 +550,8 @@ class ModelDecisionMaker:
 
               ############################### SHORTCUT: COMPASSION BEFORE MAIN NODE ############################
 
-            "trying_protocol_13": {
-                "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_13(user_id, app, db_session),
+            "trying_protocol_9": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_9(user_id, app, db_session),
 
                 "choices": {"continue": "user_found_compassion_to_child"},
                 "protocols": {"continue": []},
@@ -564,7 +564,7 @@ class ModelDecisionMaker:
                 "choices": {
                     "yes": "check_tender_vs_foresighted_compassion",
                     "no": lambda user_id, db_session, curr_session, app: self.get_count_by_question(user_id, curr_session, "A05"),
-                    #"no": "trying_protocol_13",
+                    #"no": "trying_protocol_9",
                 },
                 "protocols": {
                     "yes": [],
@@ -626,7 +626,7 @@ class ModelDecisionMaker:
                  "model_prompt": lambda user_id, db_session, curr_session, app: self.shown_compassion_ask_feel_better(user_id, app, db_session),
                 "choices": {
                     "yes": "main_node",
-                    "no": "trying_protocol_13",
+                    "no": "trying_protocol_9",
                 },
 
 
@@ -2169,7 +2169,7 @@ class ModelDecisionMaker:
 
 
     # COMPASSION METHOD
-    def trying_protocol_13(self, user_id, app, db_session):
+    def trying_protocol_9(self, user_id, app, db_session):
         curr_question_code = "A04"
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
@@ -3405,7 +3405,7 @@ class ModelDecisionMaker:
         if question_code == "A05":
             if self.nodes_count_by_user[user_id][question_code] < 2:
                 self.nodes_count_by_user[user_id][question_code] += 1
-                return "trying_protocol_13"
+                return "trying_protocol_9"
             else:
                 self.nodes_count_by_user[user_id][question_code] = 0
                 return "user_found_no_compassion_to_child_after_3"
@@ -3413,7 +3413,7 @@ class ModelDecisionMaker:
         elif question_code == "A11":
             if self.nodes_count_by_user[user_id][question_code] < 2:
                 self.nodes_count_by_user[user_id][question_code] += 1
-                return "trying_protocol_13"
+                return "trying_protocol_9"
             else:
                 self.nodes_count_by_user[user_id][question_code] = 0
                 return "come_back_tomorrow_before_main_node"
@@ -3455,7 +3455,7 @@ class ModelDecisionMaker:
         if question_code == "A05":
             if user_session.a05_count <= 3:
                 user_session.a05_count += 1
-                return "trying_protocol_13"
+                return "trying_protocol_9"
             else:
                 user_session.a05_count = 0
                 return "user_found_no_compassion_to_child_after_3"
@@ -3463,7 +3463,7 @@ class ModelDecisionMaker:
         elif question_code == "A11":
             if user_session.a11_count <= 3:
                 user_session.a11_count += 1
-                return "trying_protocol_13"
+                return "trying_protocol_9"
             else:
                 user_session.a11_count = 0
                 return "come_back_tomorrow_before_main_node"
