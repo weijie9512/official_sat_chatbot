@@ -50,12 +50,27 @@ class News:
         """
 
         formatted_query = ' '.join(query.split("_"))
-        news = self.newsapi.get_everything(q=formatted_query,
-                                        from_param=from_param,
-                                        to=to,
-                                        language=language,
-                                        sort_by=sort_by,
-                                        page=page)
+        print(formatted_query)
+        if formatted_query in ["gender inequality", "wealth inequality", "homeless", "poverty"]:
+            news = self.newsapi.get_everything(q=formatted_query,
+                                            from_param=from_param,
+                                            to=to,
+                                            language=language,
+                                            sort_by=sort_by,
+                                           page=page)
+        else:
+            news = self.newsapi.get_everything(q=formatted_query,
+                                            from_param=from_param,
+                                            to=to,
+                                            language=language,
+                                            sort_by=sort_by,
+                                            # source: news24: south africa
+                                            # rt: russia
+                                            # ary-news: palestine
+                                            #sources = "abc-news, rt, al-jazeera-english, ary-news, bloomberg, cbc-news, google-news, google-news-ca, google-news-in, google-news-is, google-news-ru, google-news-sa, google-news-uk, news24, politico, rbc, the-hindu, the-times-of-india, time",
+                                            #
+                                            sources = "rt, reuters, al-jazeera-english, ary-news, bloomberg, news24, politico, abc-news",
+                                            page=page)
 
         article_titles = []
         content = []
@@ -92,7 +107,7 @@ class News:
 if __name__ == "__main__":
     news = News()
 
-    #news.save_and_update()
+    news.save_and_update()
     """
     
     keyword = "climate"
