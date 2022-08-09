@@ -1313,7 +1313,7 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_awareness_begin(user_id, app, db_session),
                 
                "choices": {
-                  "Mental": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "mental"),
+                  "Mental Health": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "mental"),
                   "War": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "war"),
                   "Climate": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "climate"),
                   "Homeless": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "homeless"),
@@ -1322,7 +1322,7 @@ class ModelDecisionMaker:
                   "Wealth Inequality": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "wealth inequality"),
                },
                "protocols": {
-                  "Mental": [],
+                  "Mental Health": [],
                   "War": [],
                   "Climate": [],
                   "Homeless": [],
@@ -1818,13 +1818,13 @@ class ModelDecisionMaker:
 
 
     def greet_user(self, user_id):
-        greet_user = ["Hello! Welcome to the CompassionBot!, This chatbot is used to develop foresighted compassion. Compassion is very important, and the absence of compassion can lead to severe consequences.",  \
-                    "One example of lack of universal compassion is the Russian-Ukrainian war, where the leaders that do not have compassion took drastic actions and led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
+        greet_user = ["Hello! Welcome to the CompassionBot!, This chatbot is used to develop compassion (including foresighted compassion). Compassion is very important, and the absence of compassion can lead to severe consequences.",  \
+                    "One example of lack of universal compassion is the Russian-Ukrainian war. In a series of events, leaders without compassion took actions that led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
         return greet_user
 
     def greet_user2(self, user_id):
-        greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by the projection of compassion from childhood self to larger issues like war.", \
-                    "More specifically, this chatbot aims to develop foresighted compassion.  Contrary to tender compassion, foresighted compassion aims to develop compassionate traits within you to develop sustainable, and actionable items for you. "]
+        greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by transfer of compassion from childhood self to other people and contexts.", \
+                    "More specifically, this chatbot aims to develop foresighted compassion.  Foresighted compassion goes beyond tender compassion, and aims to develop compassionate traits within you to develop sustainable, and actionable items for you. "]
         return greet_user
 
     def get_opening_prompt(self, user_id):
@@ -2213,7 +2213,7 @@ class ModelDecisionMaker:
                 You feel for the victim, hoping to do something that can alleviate the suffering of the victim immediately. \
                 Now, it is time to bring the compassion to the next level. Please take SAT module later to help you develop foresighted compassion! Foresighted compassion \
                 aims to help you develop long-term solutions that can help victim to face the suffering , and grow from there. Let's go further!"]
-
+    
     
     def shown_foresighted_compassion(self, user_id, app, db_session):
         curr_question_code = "A08"
@@ -2341,7 +2341,7 @@ class ModelDecisionMaker:
 
 
     def project_emotion_to_child(self, user_id, app, db_session):
-        return ["Let us continue. Now, close your eyes, project the negative emotions to the child, and feel the emotion."]
+        return ["Let us continue. Now, close your eyes, project the emotion to the child, and feel the emotion."]
     
     def sat_feel_compassion_to_child_question(self, user_id, app, db_session):
         curr_question_code = "A05"
