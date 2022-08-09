@@ -1818,7 +1818,7 @@ class ModelDecisionMaker:
 
 
     def greet_user(self, user_id):
-        greet_user = ["Hello! Welcome to the compassion chatbot!, This chatbot is used to develop foresighted compassion. Compassion is very important, and the absence of compassion can lead to severe consequences.",  \
+        greet_user = ["Hello! Welcome to the CompassionBot!, This chatbot is used to develop foresighted compassion. Compassion is very important, and the absence of compassion can lead to severe consequences.",  \
                     "One example of lack of universal compassion is the Russian-Ukrainian war, where the leaders that do not have compassion took drastic actions and led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
         return greet_user
 
@@ -1830,9 +1830,9 @@ class ModelDecisionMaker:
     def get_opening_prompt(self, user_id):
         time.sleep(3)
         if self.users_names[user_id] == "":
-            opening_prompt = [f"Hello, this is Compassion Chatbot (CC)!" + ". ", "How are you feeling today?"]
+            opening_prompt = [f"Hello, this is CompassionBot!" + ". ", "How are you feeling today?"]
         else:
-            opening_prompt = ["Hello " + self.users_names[user_id] + ", this is Compassion Chatbot (CC)!", "How are you feeling today?"]
+            opening_prompt = ["Hello " + self.users_names[user_id] + ", this is CompassionBot!", "How are you feeling today?"]
         return opening_prompt
 
 
