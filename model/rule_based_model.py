@@ -21,7 +21,7 @@ from nltk.corpus import wordnet  # noqa
 
 
 
-COI_IP_ADDRESS = "http://127.0.0.1:5001"
+COI_IP_ADDRESS = "http://3.11.224.175"
 class ModelDecisionMaker:
     def __init__(self):
         #self.kai = pd.read_csv('/Users/weijiechua/Desktop/ImperialClasses/Courses/Term3/wj_SATbot2.0/model/kai.csv', encoding='ISO-8859-1') #change path
