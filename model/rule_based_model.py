@@ -1825,6 +1825,7 @@ class ModelDecisionMaker:
     def greet_user2(self, user_id):
         greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by transfer of compassion from childhood self to other people and contexts.", \
                     "More specifically, this chatbot aims to develop foresighted compassion.  Foresighted compassion goes beyond tender compassion, and aims to develop compassionate traits within you to develop sustainable, and actionable items for you. "]
+                    
         return greet_user
 
     def get_opening_prompt(self, user_id):
@@ -2207,8 +2208,9 @@ class ModelDecisionMaker:
         curr_question_code = "A09"
 
         question2 = self.get_best_sentence_from_question_code(user_id, curr_question_code)
-
-        return [question, question2]
+        tender_compassion = "The more direct form of compassion - tender compassion has been researched extensively by Professor Paul Gilbert. You can look it up to learn more about the amazing work done by Professor Gilbert."
+        
+        return [question, tender_compassion, question2]
         return ["Congratulations! You have shown tender compassion. Tender compassion is the first phase of compassion, where you feel sympathy towards the victim. \
                 You feel for the victim, hoping to do something that can alleviate the suffering of the victim immediately. \
                 Now, it is time to bring the compassion to the next level. Please take SAT module later to help you develop foresighted compassion! Foresighted compassion \

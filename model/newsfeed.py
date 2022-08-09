@@ -57,7 +57,7 @@ class News:
                                             to=to,
                                             language=language,
                                             sort_by=sort_by,
-                                           page=page)
+                                            page=page)
         else:
             news = self.newsapi.get_everything(q=formatted_query,
                                             from_param=from_param,
@@ -107,7 +107,7 @@ class News:
 if __name__ == "__main__":
     news = News()
 
-    news.save_and_update()
+    #news.save_and_update()
     """
     
     keyword = "climate"
