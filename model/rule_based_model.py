@@ -642,6 +642,7 @@ class ModelDecisionMaker:
             "main_node": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.main_node(user_id, app, db_session),
                 "choices": {
+                    "What should I choose?": "main_node_faq",
                     "Awareness, Understanding, Commitments (AUC)": "auc_choose_a_u_c",
                     "Clash of Ideas (COI)": "coi_start",
                     "Everyday Simple Action (ESA)": "esa_last_week",
@@ -650,11 +651,23 @@ class ModelDecisionMaker:
                 },
 
                 "protocols": {
+                    "What should I choose?": [],
                     "Awareness, Understanding, Commitments (AUC)": [],
                     "Clash of Ideas (COI)": [],
                     "Everyday Simple Action (ESA)": [],
                     "SAT protocols (SAT)": [], 
                     "End the session": [],
+                },
+            },
+
+            "main_node_faq": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.main_node_faq(user_id, app, db_session),
+                "choices": {
+                    "continue": "main_node",
+                },
+
+                "protocols": {
+                    "continue": [],
                 },
             },
 
@@ -2241,7 +2254,14 @@ class ModelDecisionMaker:
 
     # SHORTCUT: MAIN NODE METHOD 
     def main_node(self, user_id, app, db_session):
+        main_node_msg= "Welcome to the MAIN NODE! What do you feel like doing today?"
         return ["Welcome to the MAIN NODE! What do you feel like doing today?"]
+
+    def main_node_faq(self, user_id, app, db_session):
+        main_node_instruction = "If you are new to the chatbot, you should start by going to SAT to practice SAT."
+        main_node_instruction2 = "After going through a round of practises, go to ESA to practice tender compassion."
+        main_node_instruction3 = "Finaly, go to AUC to expose yourself to world issues and practice your newly founded compassion! You will then be asked to go to COI to discuss some of the ideas."
+        return [main_node_instruction, main_node_instruction2, main_node_instruction3]
 
     def congrats_before_main_node(self, user_id, app, db_session):
         return ["Congratulations! Now let us move to MAIN NODE."]
