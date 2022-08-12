@@ -9,12 +9,12 @@
 .option {
   border-radius: 25px;
   padding: 8px;
-  border: 1px solid #4A4A4A;
-  color: #4A4A4A;
+  border: 1px solid #9E768F;
+  color: black;
   font-family: arial;
   font-size: 1.1rem;
   margin: 4px 4px;
-  background: transparent;
+  background: #9E768F;
 }
 
 /* .option::selection {
