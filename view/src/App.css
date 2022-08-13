@@ -56,7 +56,7 @@
   padding: 10px;
   border-radius: 5px;
   font-family: arial;
-  font-size: 1.1rem;
+  font-size: 1.1rem !important;
   font-weight: medium;
   position: relative;
   text-align: left;
@@ -135,7 +135,7 @@
   padding: 10px;
   border-radius: 5px;
   font-family: arial;
-  font-size: 1.1rem;
+  font-size: 1.1rem !important;
   font-weight: medium;
   position: relative;
   text-align: left;
@@ -170,7 +170,7 @@
   font-family: Arial;
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  font-size: 1rem !important;
   padding: 12.5px;
   font-weight: normal;
   /* border-bottom-style: solid;
@@ -198,7 +198,7 @@
   width: 100%;
   padding: 12.5px;
   border: none;
-  font-size: 1.1rem;
+  font-size: 1.1rem !important;
   border-top: 1px solid #E7CFBC;
   background: #E7CFBC !important;
   /* border-top: 1px solid #d8d8d8; */
