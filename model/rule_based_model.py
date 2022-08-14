@@ -2250,7 +2250,7 @@ class ModelDecisionMaker:
     def get_model_prompt_found_compassion_to_child(self, user_id, app, db_session):
         curr_question_code = "A05"
 
-        additional_prompt = "Now, project your compassion towards your childhood self."
+        additional_prompt = "Now, project your emotion towards your childhood self."
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
         return [additional_prompt, question]
