@@ -2842,6 +2842,7 @@ class ModelDecisionMaker:
             answer = "A full SAT programme takes 8 weeks, following the PDF schedule."
             answer2 = "However, in this chatbot, depending on your answer, we have created a tailored experience to develop compassion for you."
             answer3 = "You will only need to work on the exercises when prompted by the chatbot, and you can ignore the sequence presented in the PDF."
+            return [answer, answer2, answer3]
         else:
             return ["NA"]
 
