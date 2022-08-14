@@ -1990,7 +1990,7 @@ class ModelDecisionMaker:
         elif len(temp_list) == 3:
             return temp_list[0], temp_list[1], temp_list[2]
         elif len(temp_list) == 4:
-            return temp_list[0], temp_list[1], temp_list[2]
+            return temp_list[0], temp_list[1], temp_list[2],temp_list[3]
         else:
             return sentence
 
