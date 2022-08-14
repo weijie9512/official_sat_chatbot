@@ -2793,7 +2793,7 @@ class ModelDecisionMaker:
             self.nodes_direction[user_id]["faq node"] = current_node
 
         return "faq"
-    def faq(self, user_id, app, db_session, question):
+    def faq(self, user_id, app, db_session):
         return "Welcome to FAQ! Please choose a category from below."
 
     def get_faq(self, user_id, app, db_session, question):
