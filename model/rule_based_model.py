@@ -256,11 +256,17 @@ class ModelDecisionMaker:
 
                 "choices": {
                     "What is childhood self?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What is childhood self?"),
+                    "What does projecting emotion to childhood self means?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What does projecting emotion to childhood self means?"),
+                    "What is the difference between tender compassion and foresighted compassion?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What is the difference between tender compassion and foresighted compassion?"),
+                    "How should I work on this?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "How long should I work on this?"),
                     "Continue": lambda user_id, db_session, curr_session, app: self.go_back_from_faq(user_id, app, db_session)
 
                 },
                 "protocols": {
                     "What is childhood self?": [],
+                    "What does projecting emotion to childhood self means?": [],
+                    "What is the difference between tender compassion and foresighted compassion?": [],
+                    "How should I work on this?": [],
                     "Continue": [],
                 },
             },
@@ -2818,9 +2824,24 @@ class ModelDecisionMaker:
     def get_faq(self, user_id, app, db_session):
         question = self.nodes_direction[user_id]["faq question"]
         if question == "What is childhood self?":
-            what_is_child_answer = "You try to distinguish between your Adult, i.e. your thinking and reasoning capacity that is more dominant when you are calm, and your Child, i.e. your emotions and affects that become more dominant under stress and crisis."
-            what_is_child_answer2 = "The first principle of self-attachment is to have a warm and compassionate attitude towards your Child and their emotional problems. Later this compassion is extended to other people. "
-            return [what_is_child_answer, what_is_child_answer2]
+            answer = "You try to distinguish between your Adult, i.e. your thinking and reasoning capacity that is more dominant when you are calm, and your Child, i.e. your emotions and affects that become more dominant under stress and crisis."
+            answer2 = "The first principle of self-attachment is to have a warm and compassionate attitude towards your Child and their emotional problems. Later this compassion is extended to other people. "
+            return [answer, answer2]
+        elif question == "What is the difference between tender compassion and foresighted compassion?":
+            answer = "Tender compassion is a form of compassion that is most commonly seen where people express sympathy towards unfortunate people. They might provide an immediate assitance such as donation in the hope that it alleviates the suffering, however it does not solve the root cause of the problem."
+            answer2 = "On the other hand, foresighted compassion is the more thoughtful compassion which aims to solve problem globally from the root cause. For example, solving homeless problem requires a systematic planning that reduce social inequality."
+            return [answer, answer2]
+
+        elif question == "What does projecting emotion to childhood self means?":
+            answer = "In SAT, there are references to adult self and childhood self. When you are asked to project your emotion, you are expected to transfer your emotion towards the childhood self, and switch back to your adult self to see what you feel towards the childhood self."
+            answer2 = "For example, you might be feeling jealousy towards someone. You will first project that emotion towards the childhood self. As the adult self, you will disocciate yourself from the negative feelings. Now, you will notice that your chilldhood self is having some jealousy towards someone."
+            answer3 = "It is likely that you will find ways to calm the child down. You might tell the child it is not a good thing to be jealous, or you might find ways to distract the child, or you might hope that the child will grow up and solve the jealousy by himself/herself."
+            answer4 = "It is through this process of calming down the child that you develop compassion that you want to help the child. "
+            return [answer, answer2, answer3, answer4]
+        elif question == "How should I work on this?":
+            answer = "A full SAT programme takes 8 weeks, following the PDF schedule."
+            answer2 = "However, in this chatbot, depending on your answer, we have created a tailored experience to develop compassion for you."
+            answer3 = "You will only need to work on the exercises when prompted by the chatbot, and you can ignore the sequence presented in the PDF."
         else:
             return ["NA"]
 
