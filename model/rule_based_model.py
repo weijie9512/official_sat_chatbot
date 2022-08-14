@@ -2813,6 +2813,7 @@ class ModelDecisionMaker:
             self.nodes_direction[user_id] = {"faq question": question}
         else:
             self.nodes_direction[user_id]["faq question"] = question
+        return "get_faq"
 
     def get_faq(self, user_id, app, db_session):
         question = self.nodes_direction[user_id]["faq question"]
