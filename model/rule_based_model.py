@@ -2802,6 +2802,8 @@ class ModelDecisionMaker:
             what_is_child_answer = "You try to distinguish between your Adult, i.e. your thinking and reasoning capacity that is more dominant when you are calm, and your Child, i.e. your emotions and affects that become more dominant under stress and crisis."
             what_is_child_answer2 = "The first principle of self-attachment is to have a warm and compassionate attitude towards your Child and their emotional problems. Later this compassion is extended to other people. "
             return [what_is_child, what_is_child_answer, what_is_child_answer2]
+        else:
+            return ["NA"]
 
     def go_back_from_faq(self, user_id, app, db_session):
         return self.nodes_direction[user_id]["faq node"]
