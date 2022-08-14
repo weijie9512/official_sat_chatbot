@@ -263,6 +263,7 @@ class ModelDecisionMaker:
                     "What is childhood self?": [],
                     "Continue": [],
                 },
+            },
                 
             "get_faq": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.get_faq(user_id, app, db_session),
