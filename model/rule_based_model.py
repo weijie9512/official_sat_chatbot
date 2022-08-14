@@ -2787,6 +2787,8 @@ class ModelDecisionMaker:
     def set_faq(self, user_id, app, db_session, current_node):
         if user_id not in self.nodes_direction.keys():
             self.nodes_direction[user_id] = {"faq node": current_node}
+        else:
+            self.nodes_direction[user_id]["faq node"] = current_node
 
         return "faq"
     def faq(self, user_id, app, db_session):
