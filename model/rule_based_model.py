@@ -1886,11 +1886,13 @@ class ModelDecisionMaker:
 
     def greet_user(self, user_id):
         greet_user = ["Hello! Welcome to the CompassionBot! This chatbot is used to develop compassion (including foresighted compassion). Compassion is very important, and the absence of compassion can lead to severe consequences.",  \
-                    "One example of lack of universal compassion is the Russian-Ukrainian war. In a series of events, leaders without compassion took actions that led to many people losing their lives. Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
+                    "One example of lack of universal compassion is the Russian-Ukrainian war. In a series of events, leaders without compassion took actions that led to many people losing their lives. ", \
+                    "Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
         return greet_user
 
     def greet_user2(self, user_id):
-        greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. Enhancement of compassion can potentially play a role in helping us to overcome these world issues by transfer of compassion from childhood self to other people and contexts.", \
+        greet_user = ["Hence, the goal of the chatbot is to help develop compassion by forming an affectionate bonding with the childhood self. ", \
+                    "Enhancement of compassion can potentially play a role in helping us to overcome these world issues by transfer of compassion from childhood self to other people and contexts.", \
                     "More specifically, this chatbot aims to develop foresighted compassion.  Foresighted compassion goes beyond tender compassion, and aims to develop compassionate traits within you to develop sustainable, and actionable items for you. "]
                     
         return greet_user
@@ -1986,6 +1988,8 @@ class ModelDecisionMaker:
         if len(temp_list) == 2:
             return temp_list[0], temp_list[1]
         elif len(temp_list) == 3:
+            return temp_list[0], temp_list[1], temp_list[2]
+        elif len(temp_list) == 4:
             return temp_list[0], temp_list[1], temp_list[2]
         else:
             return sentence
@@ -2406,7 +2410,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
         return ["Understand that there are 2 types of compassion. Tender compassion is a more commonly seen compassion, where the people generates immediate sympathetic feeling towards some unfortunate events. Another form of compassion, which goes beyond initial sympathetic feeling, and wanted to do more sustainable and systematically to alleviate the situation, would be known as foresighted compassion. Do you need an example?"]
 
     def sat_compassion_difference_example(self, user_id, app, db_session):
@@ -2498,7 +2502,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
         return ["What kind of compassion do you feel towards your childhood self? Is that tender compassion which is an immediate sympathy towards the child, or is that foresighted compassion, where you help to make the child grow for the long term?"]
     
     def sat_shown_tender_compassion(self, user_id, app, db_session):
@@ -2506,7 +2510,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
         return ["You have shown tender compassion towards the childhood self. Now, try to shift that compassion, and project that compassion feeling towards a vulnerable community (If you need help thinking about a vulnerable community, go to AUC)."]
 
     def sat_ask_if_help_vulnerable_communities(self, user_id, app, db_session):
@@ -2574,7 +2578,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
         return ["Great! If you believe that you have shown the trait of foresighted compassion, is it okay if still do some protocols to see how we do?"]
 
     def trying_protocol_8(self, user_id, app, db_session):
@@ -2607,14 +2611,14 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
         return ["Now think about this. Sometimes child make unreasonable requests. When they don't get it, they will be upset. It is the responsibility of our adult self to teach them to bear with it, deal with the situation with maturity. Let us practise exercise 17 and 18."]
     def sat_immediate_action_or_maturity(self, user_id, app, db_session):
         curr_question_code = "E04"
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
         return ["Do you feel that the best sort of action is perhaps not something you immediately think of, or something that the child want, rather, it could be a more difficult action that requires discipline or maturity?"]
     
     def sat_completed_foresighted_compassion_training(self, user_id, app, db_session):
@@ -2775,7 +2779,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
 
     def auc_awareness_quick_test(self, user_id, app, db_session):
         curr_question_code = "H06"
@@ -2789,7 +2793,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
 
     def auc_awareness_congrats(self, user_id, app, db_session):
         curr_question_code = "H08"
@@ -2973,7 +2977,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
 
     # SHORTCUT: AUC: Commitments
 
@@ -3068,7 +3072,7 @@ class ModelDecisionMaker:
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return self.split_sentence(question)
 
     def get_model_prompt_ending(self, user_id, app, db_session):
         curr_question_code = "K01"
