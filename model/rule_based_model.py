@@ -135,7 +135,7 @@ class ModelDecisionMaker:
                                 "auc_awareness_begin", "auc_awareness_get_news", "auc_awareness_feel_reading_news", \
                                 "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions", "esa_show_statistics", "check_tender_vs_foresighted_compassion",
                                 "trying_protocol_1_and_2", "trying_protocol_3_and_4_and_5", "trying_protocol_8", "trying_protocol_9", "trying_protocol_15", "trying_protocol_17_and_18",
-                                "project_emotion_to_child"]
+                                "project_emotion_to_child", "faq"]
         
         """
         READ HERE
