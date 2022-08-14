@@ -229,6 +229,8 @@ class ModelDecisionMaker:
                     },
             },
 
+            
+
 
             "check_emotion": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.get_model_prompt_check_emotion(user_id, app, db_session),
@@ -244,6 +246,18 @@ class ModelDecisionMaker:
                     #"Angry": [],
                     #"Anxious/Scared" : [],
                     "Happy/Content": []
+                },
+            },
+
+            "faq": {
+                "model_prompt": lambda user_id, db_session, curr_session, app: self.faq(user_id, app, db_session),
+
+                "choices": {
+                    "continue": lambda user_id, db_session, curr_session, app: self.go_back_from_faq(user_id, app, db_session)
+
+                },
+                "protocols": {
+                    "continue": [],
                 },
             },
 
@@ -553,8 +567,12 @@ class ModelDecisionMaker:
             "trying_protocol_9": {
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_9(user_id, app, db_session),
 
-                "choices": {"continue": "user_found_compassion_to_child"},
-                "protocols": {"continue": []},
+                "choices": 
+                {
+                    "Continue": "user_found_compassion_to_child",
+                    "FAQ": lambda user_id, db_session, curr_session, app: self.set_faq(user_id, app, db_session, "trying_protocol_9"),
+                    },
+                "protocols": {"Continue": [], "FAQ": []},
             },
 
 
@@ -862,10 +880,12 @@ class ModelDecisionMaker:
                  "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_1_and_2(user_id, app, db_session),
 
                "choices": {
-                   "continue": "sat_form_connection_with_child_level1",
+                   "Continue": "sat_form_connection_with_child_level1",
+                   "FAQ": lambda user_id, db_session, curr_session, app: self.set_faq(user_id, app, db_session, "trying_protocol_1_and_2"),
                },
                "protocols": {
-                  "continue": [],
+                  "Continue": [],
+                  "FAQ": [],
                },
 
             },
@@ -888,7 +908,7 @@ class ModelDecisionMaker:
 
                "choices": {
                    "yes": "trying_protocol_3_and_4_and_5",
-                   "no": "sat_go_esa_or_end"
+                   "no": "sat_go_esa_or_end",
                },
                "protocols": {
                   "yes": [],
@@ -915,10 +935,13 @@ class ModelDecisionMaker:
                  "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_3_and_4_and_5(user_id, app, db_session),
 
                "choices": {
-                   "continue": "sat_form_connection_with_child_level2",
+                   "Continue": "sat_form_connection_with_child_level2",
+                   "FAQ": lambda user_id, db_session, curr_session, app: self.set_faq(user_id, app, db_session, "trying_protocol_3_and_4_and_5"),
+                   
                },
                "protocols": {
-                  "continue": [],
+                  "Continue": [],
+                  "FAQ": [],
                },
 
             },
@@ -1021,10 +1044,12 @@ class ModelDecisionMaker:
                  "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_15(user_id, app, db_session),
 
                "choices": {
-                  "continue": "sat_imagine_self_vulnerable",
+                  "Continue": "sat_imagine_self_vulnerable",
+                  "FAQ": lambda user_id, db_session, curr_session, app: self.set_faq(user_id, app, db_session, "trying_protocol_15"),
                },
                "protocols": {
-                  "continue": [],
+                  "Continue": [],
+                  "FAQ": [],
                },
 
             },
@@ -1099,11 +1124,13 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_8(user_id, app, db_session),
 
                 "choices": {
-                    "continue": "congrats_before_main_node"
+                    "Continue": "congrats_before_main_node",
+                    "FAQ": lambda user_id, db_session, curr_session, app: self.set_faq(user_id, app, db_session, "trying_protocol_8"),
                 },
 
                 "protocols": {
-                    "continue": []
+                    "Continue": [],
+                    "FAQ": [],
                 },
             },
 
@@ -1138,10 +1165,13 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.trying_protocol_17_and_18(user_id, app, db_session),
 
                "choices": {
-                   "continue": "sat_immediate_action_or_maturity",
+                   "Continue": "sat_immediate_action_or_maturity",
+                   "FAQ": lambda user_id, db_session, curr_session, app: self.set_faq(user_id, app, db_session, "trying_protocol_17_and_18"),
+
                },
                "protocols": {
-                   "continue": [],
+                   "Continue": [],
+                   "FAQ": [],
                },
 
             },
@@ -2750,7 +2780,22 @@ class ModelDecisionMaker:
 
         return question
 
+    def set_faq(self, user_id, app, db_session, current_node):
+        if user_id not in self.nodes_direction.keys():
+            self.nodes_direction[user_id] = {"faq node": current_node}
+
+        return "faq"
+    def faq(self, user_id, app, db_session):
+        what_is_child = "What is child/childhood self?"
+        what_is_child_answer = "You try to distinguish between your Adult, i.e. your thinking and reasoning capacity that is more dominant when you are calm, and your Child, i.e. your emotions and affects that become more dominant under stress and crisis."
+        what_is_child_answer2 = "The first principle of self-attachment is to have a warm and compassionate attitude towards your Child and their emotional problems. Later this compassion is extended to other people. "
+        return [what_is_child, what_is_child_answer, what_is_child_answer2]
+
+    def go_back_from_faq(self, user_id, app, db_session):
+        return self.nodes_direction[user_id]["faq node"]
         
+
+
     def auc_understanding_research_existing(self, user_id, app, db_session):
         curr_question_code = "I01"
 
