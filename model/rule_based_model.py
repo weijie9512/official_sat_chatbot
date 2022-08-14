@@ -255,11 +255,13 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.faq(user_id, app, db_session),
 
                 "choices": {
-                    "continue": lambda user_id, db_session, curr_session, app: self.go_back_from_faq(user_id, app, db_session)
+                    "What is childhood self?": lambda user_id, db_session, curr_session, app :self.get_faq(self, user_id, app, db_session, "What is childhood self?"),
+                    "Continue": lambda user_id, db_session, curr_session, app: self.go_back_from_faq(user_id, app, db_session)
 
                 },
                 "protocols": {
-                    "continue": [],
+                    "What is childhood self?": [],
+                    "Continue": [],
                 },
             },
 
@@ -2791,11 +2793,15 @@ class ModelDecisionMaker:
             self.nodes_direction[user_id]["faq node"] = current_node
 
         return "faq"
-    def faq(self, user_id, app, db_session):
-        what_is_child = "What is child/childhood self?"
-        what_is_child_answer = "You try to distinguish between your Adult, i.e. your thinking and reasoning capacity that is more dominant when you are calm, and your Child, i.e. your emotions and affects that become more dominant under stress and crisis."
-        what_is_child_answer2 = "The first principle of self-attachment is to have a warm and compassionate attitude towards your Child and their emotional problems. Later this compassion is extended to other people. "
-        return [what_is_child, what_is_child_answer, what_is_child_answer2]
+    def faq(self, user_id, app, db_session, question):
+        return "Welcome to FAQ! Please choose a category from below."
+
+    def get_faq(self, user_id, app, db_session, question):
+        if question == "What is childhood self?":
+            what_is_child = "What is child/childhood self?"
+            what_is_child_answer = "You try to distinguish between your Adult, i.e. your thinking and reasoning capacity that is more dominant when you are calm, and your Child, i.e. your emotions and affects that become more dominant under stress and crisis."
+            what_is_child_answer2 = "The first principle of self-attachment is to have a warm and compassionate attitude towards your Child and their emotional problems. Later this compassion is extended to other people. "
+            return [what_is_child, what_is_child_answer, what_is_child_answer2]
 
     def go_back_from_faq(self, user_id, app, db_session):
         return self.nodes_direction[user_id]["faq node"]
