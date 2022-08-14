@@ -133,7 +133,9 @@ class ModelDecisionMaker:
         self.no_lowercase_node = ["greet_user2", "sat_ask_why_not_help_vulnerable_communities", "auc_awareness_no_feeling", \
                                 "esa_last_week", "coi_start", "coi_start2a", "coi_start2b","sat_ask_type_of_compassion",
                                 "auc_awareness_begin", "auc_awareness_get_news", "auc_awareness_feel_reading_news", \
-                                "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions", "esa_show_statistics", "check_tender_vs_foresighted_compassion"]
+                                "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions", "esa_show_statistics", "check_tender_vs_foresighted_compassion",
+                                "trying_protocol_1_and_2", "trying_protocol_3_and_4_and_5", "trying_protocol_8", "trying_protocol_9", "trying_protocol_15", "trying_protocol_17_and_18",
+                                "project_emotion_to_child"]
         
         """
         READ HERE
@@ -841,10 +843,12 @@ class ModelDecisionMaker:
                "model_prompt": lambda user_id, db_session, curr_session, app: self.project_emotion_to_child(user_id, app, db_session),
 
                "choices": {
-                   "continue": "sat_feel_compassion_to_child_question",
+                   "Continue": "sat_feel_compassion_to_child_question",
+                   "FAQ": lambda user_id, db_session, curr_session, app: self.set_faq(user_id, app, db_session, "project_emotion_to_child"),
                },
                "protocols": {
-                   "continue": [],
+                   "Continue": [],
+                   "FAQ": [],
                },
             },
 
@@ -2393,7 +2397,7 @@ class ModelDecisionMaker:
 
 
     def project_emotion_to_child(self, user_id, app, db_session):
-        return ["Let us continue. Now, close your eyes, project the emotion to the child, and feel the emotion."]
+        return ["Let us continue. Now, close your eyes, project your emotion to the child, and feel the emotion."]
     
     def sat_feel_compassion_to_child_question(self, user_id, app, db_session):
         curr_question_code = "A05"
