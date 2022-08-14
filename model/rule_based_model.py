@@ -258,7 +258,7 @@ class ModelDecisionMaker:
                     "What is childhood self?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What is childhood self?"),
                     "What does projecting emotion to childhood self means?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What does projecting emotion to childhood self means?"),
                     "What is the difference between tender compassion and foresighted compassion?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What is the difference between tender compassion and foresighted compassion?"),
-                    "How should I work on this?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "How long should I work on this?"),
+                    "How should I work on this?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "How should I work on this?"),
                     "Continue": lambda user_id, db_session, curr_session, app: self.go_back_from_faq(user_id, app, db_session)
 
                 },
