@@ -255,7 +255,7 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.faq(user_id, app, db_session),
 
                 "choices": {
-                    "What is childhood self?": lambda user_id, db_session, curr_session, app :self.get_faq(self, user_id, app, db_session, "What is childhood self?"),
+                    "What is childhood self?": lambda user_id, db_session, curr_session, app :self.get_faq(user_id, app, db_session, "What is childhood self?"),
                     "Continue": lambda user_id, db_session, curr_session, app: self.go_back_from_faq(user_id, app, db_session)
 
                 },
