@@ -71,14 +71,15 @@ with torch.no_grad():
 
 # load empathy model
 
-emp_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+emp_tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 #emp_model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
-emp_model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
+emp_model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=3)
 with torch.no_grad():
-    try:
-      emp_model.load_state_dict(torch.load("bert-base-uncased_full_data.pt", map_location="cpu"))
-    except:
-      emp_model.load_state_dict(torch.load("model/bert-base-uncased_full_data_stable.pt", map_location="cpu"))
+  #emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
+  try:
+    emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
+  except:
+    emp_model.load_state_dict(torch.load("model/distilbert-base-uncased_full_data_stable.pt", map_location="cpu"))
     
     
 

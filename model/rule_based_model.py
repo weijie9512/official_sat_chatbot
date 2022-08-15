@@ -1969,7 +1969,7 @@ class ModelDecisionMaker:
         maxscore = 0
         chosen = ''
         # CHANGED_HERE from 5 to 2
-        for row in column.dropna().sample(n=5): #was 25
+        for row in column.dropna().sample(n=4): #was 25
              fitscore = get_sentence_score(row, prev_qs)
              if fitscore > maxscore:
                  maxscore = fitscore
