@@ -29,6 +29,13 @@ from transformers import (
 from tokenizers import ByteLevelBPETokenizer
 
 from tokenizers.processors import BertProcessing
+import pandas as pd
+
+
+try:
+  precomputed_df = pd.read_excel("../data/survey_data/precomputed_data/precomputed_data.xlsx")
+except:
+  precomputed_df = None
 
 #T5:
 class T5FineTuner(pl.LightningModule):
@@ -58,13 +65,18 @@ args_dict = dict(
 args = argparse.Namespace(**args_dict)
 
 
+precomputation = False
+
 #load emotion classifier (T5 small)
 with torch.no_grad():
     emo_model = T5FineTuner(args)
-    try:
-      emo_model.load_state_dict(torch.load('T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
-    except:
-      emo_model.load_state_dict(torch.load('model/T5_small_emotion_stable.pt', map_location=torch.device('cpu')), strict=False)
+    if precomputation:
+      emo_model.load_state_dict(torch.load('../model/T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
+    else:
+      try:
+        emo_model.load_state_dict(torch.load('T5_small_emotion.pt', map_location=torch.device('cpu')), strict=False)
+      except:
+        emo_model.load_state_dict(torch.load('model/T5_small_emotion_stable.pt', map_location=torch.device('cpu')), strict=False)
     
 
 
@@ -75,14 +87,17 @@ emp_tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 #emp_model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
 emp_model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=3)
 with torch.no_grad():
+  if precomputation:
+    emp_model.load_state_dict(torch.load("../model/distilbert-base-uncased_full_data.pt", map_location="cpu"))
+  
   #emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
-  try:
-    emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
-  except:
-    emp_model.load_state_dict(torch.load("model/distilbert-base-uncased_full_data_stable.pt", map_location="cpu"))
+  else:
+    try:
+      emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
+    except:
+      emp_model.load_state_dict(torch.load("model/distilbert-base-uncased_full_data_stable.pt", map_location="cpu"))
     
     
-
 
 #Load pre-trained GPT2 language model weights
 with torch.no_grad():
@@ -216,13 +231,19 @@ def novelty_score(sentence, dataframe):
   return round(score, 2)
 
 
-def get_sentence_score(sentence, dataframe):
+def get_sentence_score(sentence, dataframe, question_code):
   '''
   Calculates how fit a sentence is based on its weighted empathy, fluency
   and novelty values
   '''
-  empathy = empathy_score(sentence)
-  fluency = fluency_score(sentence)
+  try:
+    print("Using precomputed score")
+    empathy = precomputed_df.loc[precomputed_df[question_code] == sentence][question_code+ "_empathy"].item()
+    fluency = precomputed_df.loc[precomputed_df[question_code] == sentence][question_code+ "_fluency"].item()
+  except:
+    print("Using live score")
+    empathy = empathy_score(sentence)
+    fluency = fluency_score(sentence)
   novelty = novelty_score(sentence, dataframe)
   score = empathy + 0.75*fluency + 2*novelty
   return score

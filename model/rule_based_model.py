@@ -1964,13 +1964,13 @@ class ModelDecisionMaker:
         return "guess_emotion"
 
 
-    def get_best_sentence(self, column, prev_qs):
+    def get_best_sentence(self, column, prev_qs, question_code):
         #return random.choice(column.dropna().sample(n=15).to_list()) #using random choice instead of machine learning
         maxscore = 0
         chosen = ''
         # CHANGED_HERE from 5 to 2
         for row in column.dropna().sample(n=4): #was 25
-             fitscore = get_sentence_score(row, prev_qs)
+             fitscore = get_sentence_score(row, prev_qs, question_code)
              if fitscore > maxscore:
                  maxscore = fitscore
                  chosen = row
@@ -3382,7 +3382,7 @@ class ModelDecisionMaker:
         column = self.compassion_data[question_code].dropna() # this returns the vaierty of text, since compassion_data col name is question code
         
         # get best sentence
-        question = self.get_best_sentence(column, prev_qs)
+        question = self.get_best_sentence(column, prev_qs, question_code)
 
         # remove the sentence
         self.add_and_check_recent_questions_length(user_id, question)
