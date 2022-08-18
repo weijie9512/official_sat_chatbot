@@ -135,7 +135,7 @@ class ModelDecisionMaker:
                                 "auc_awareness_begin", "auc_awareness_get_news", "auc_awareness_feel_reading_news", \
                                 "auc_awareness_quick_test", "auc_commitments_why_not_follow_through_solutions", "esa_show_statistics", "check_tender_vs_foresighted_compassion",
                                 "trying_protocol_1_and_2", "trying_protocol_3_and_4_and_5", "trying_protocol_8", "trying_protocol_9", "trying_protocol_15", "trying_protocol_17_and_18",
-                                "project_emotion_to_child", "faq"]
+                                "project_emotion_to_child", "faq", "auc_commitments_follow_through_solutions", "auc_understanding_research_existing"]
         
         """
         READ HERE
@@ -259,6 +259,7 @@ class ModelDecisionMaker:
                     "What does projecting emotion to childhood self means?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What does projecting emotion to childhood self means?"),
                     "What is the difference between tender compassion and foresighted compassion?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "What is the difference between tender compassion and foresighted compassion?"),
                     "How should I work on this?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "How should I work on this?"),
+                    "Why am I asked to repeat some of the exercises?": lambda user_id, db_session, curr_session, app :self.set_faq_question(user_id, app, db_session, "Why am I asked to repeat some of the exercises?"),
                     "Continue": lambda user_id, db_session, curr_session, app: self.go_back_from_faq(user_id, app, db_session)
 
                 },
@@ -267,6 +268,7 @@ class ModelDecisionMaker:
                     "What does projecting emotion to childhood self means?": [],
                     "What is the difference between tender compassion and foresighted compassion?": [],
                     "How should I work on this?": [],
+                    "Why am I asked to repeat some of the exercises?": [],
                     "Continue": [],
                 },
             },
@@ -1556,14 +1558,16 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_existing(user_id, app, db_session),
                 
                "choices": {
-                   "yes": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_set_count(user_id, db_session, "yes"), # go to auc_understanding_research_statistics
-                   "no": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_set_count(user_id, db_session, "no"), # go to auc_understanding_research_statistics
+                   "Yes": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_set_count(user_id, db_session, "yes"), # go to auc_understanding_research_statistics
+                   "No": lambda user_id, db_session, curr_session, app: self.auc_understanding_research_set_count(user_id, db_session, "no"), # go to auc_understanding_research_statistics
+                  "Choose AUC again": "auc_choose_a_u_c",
                   #"yes": "auc_understanding_research_reasonable_solutions",
                   # "no": "auc_understanding_set_deadline",
                },
                "protocols": {
-                 "yes": [],
-                 "no": [],
+                 "Yes": [],
+                 "No": [],
+                "Choose AUC again": [],
                },
 
             },
@@ -1649,12 +1653,14 @@ class ModelDecisionMaker:
                 "model_prompt": lambda user_id, db_session, curr_session, app: self.auc_commitments_follow_through_solutions(user_id, app, db_session),
 
                "choices": {
-                  "yes": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_set_count(user_id, db_session, "yes"),
-                  "no": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_set_count(user_id, db_session, "no"),
+                  "Yes": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_set_count(user_id, db_session, "yes"),
+                  "No": lambda user_id, db_session, curr_session, app: self.auc_commitments_research_set_count(user_id, db_session, "no"),
+                  "Choose AUC again": "auc_choose_a_u_c",
                },
                "protocols": {
-                  "yes": [],
-                  "no": [],
+                  "Yes": [],
+                  "No": [],
+                  "Choose AUC again": "auc_choose_a_u_c",
                },
             },
 
@@ -2832,21 +2838,26 @@ class ModelDecisionMaker:
             answer2 = "The first principle of self-attachment is to have a warm and compassionate attitude towards your Child and their emotional problems. Later this compassion is extended to other people. "
             return [answer, answer2]
         elif question == "What is the difference between tender compassion and foresighted compassion?":
-            answer = "Tender compassion is a form of compassion that is most commonly seen where people express sympathy towards unfortunate people. They might provide an immediate assitance such as donation in the hope that it alleviates the suffering, however it does not solve the root cause of the problem."
+            answer = "Tender compassion is a form of compassion that is most commonly seen where people express sympathy towards unfortunate people. They might provide an immediate assistance such as donation in the hope that it alleviates the suffering, however it does not solve the root cause of the problem."
             answer2 = "On the other hand, foresighted compassion is the more thoughtful compassion which aims to solve problem globally from the root cause. For example, solving homeless problem requires a systematic planning that reduce social inequality."
             return [answer, answer2]
 
         elif question == "What does projecting emotion to childhood self means?":
             answer = "In SAT, there are references to adult self and childhood self. When you are asked to project your emotion, you are expected to transfer your emotion towards the childhood self, and switch back to your adult self to see what you feel towards the childhood self."
-            answer2 = "For example, you might be feeling jealousy towards someone. You will first project that emotion towards the childhood self. As the adult self, you will disocciate yourself from the negative feelings. Now, you will notice that your chilldhood self is having some jealousy towards someone."
+            answer2 = "For example, you might be feeling jealousy towards someone. You will first project that emotion towards the childhood self. As the adult self, you will dissocciate yourself from the negative feelings. Now, you will notice that your chilldhood self is having some jealousy towards someone."
             answer3 = "It is likely that you will find ways to calm the child down. You might tell the child it is not a good thing to be jealous, or you might find ways to distract the child, or you might hope that the child will grow up and solve the jealousy by himself/herself."
             answer4 = "It is through this process of calming down the child that you develop compassion that you want to help the child. "
             return [answer, answer2, answer3, answer4]
         elif question == "How should I work on this?":
             answer = "A full SAT programme takes 8 weeks, following the PDF schedule."
             answer2 = "However, in this chatbot, depending on your answer, we have created a tailored experience to develop compassion for you."
-            answer3 = "You will only need to work on the exercises when prompted by the chatbot, and you can ignore the sequence presented in the PDF."
-            return [answer, answer2, answer3]
+            answer3 = "You will only need to work on the exercises when prompted by the chatbot, and you can ignore the sequence presented in the PDF." 
+            answer4 = "You should still work on the exercise as instructed by the chatbot by referring to the content in the PDF on the right."
+            return [answer, answer2, answer3, answer4]
+        elif question == "Why am I asked to repeat some of the exercises?":
+            answer = "Sometimes, practicing SAT exercise does not bring an immediate effect, and requires more effort and time."
+            answer2 = "Repeating the exercise ensures you get the specific benefit from practicing with the associated exercise."
+            return [answer, answer2]
         else:
             return ["NA"]
 
@@ -2856,11 +2867,12 @@ class ModelDecisionMaker:
 
 
     def auc_understanding_research_existing(self, user_id, app, db_session):
+        additional_msg = "At this stage, you should have think about a problem, and potential solutions in Awareness stage (If you have yet to do it, go back to Awareness stage)."
         curr_question_code = "I01"
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return [additional_msg, question]
 
     def auc_understanding_research_set_count(self, user_id, db_session, action):
         if user_id not in self.nodes_direction.keys():
@@ -2986,11 +2998,12 @@ class ModelDecisionMaker:
         return question
 
     def auc_commitments_follow_through_solutions(self, user_id, app, db_session):
+        additional_msg = "You should have proposed some solutions in the Understanding stage, and to follow through with the solutions. (If you have yet to propose a solution, please go back to Understanding in AUC)."
         curr_question_code = "J01"
 
         question = self.get_best_sentence_from_question_code(user_id, curr_question_code)
 
-        return question
+        return [additional_msg, question]
 
     def auc_commitments_research_set_count(self, user_id, db_session, action):
         if user_id not in self.nodes_direction.keys():
