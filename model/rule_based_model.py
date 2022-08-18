@@ -2856,7 +2856,7 @@ class ModelDecisionMaker:
             return [answer, answer2, answer3, answer4]
         elif question == "Why am I asked to repeat some of the exercises?":
             answer = "Sometimes, practicing SAT exercise does not bring an immediate effect, and requires more effort and time."
-            answer2 = "Repeating the exercise ensures you get the specific benefit from practicing with the associated exercise."
+            answer2 = "Repeating the exercise ensures you get the specific benefit from practicing the associated exercise."
             return [answer, answer2]
         else:
             return ["NA"]
