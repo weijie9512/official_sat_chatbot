@@ -1893,7 +1893,8 @@ class ModelDecisionMaker:
     def greet_user(self, user_id):
         greet_user = ["Hello! Welcome to the CompassionBot! This chatbot is used to develop compassion (including foresighted compassion). Compassion is very important, and the absence of compassion can lead to severe consequences.",  \
                     "One example of lack of universal compassion is the Russian-Ukrainian war. In a series of events, leaders without compassion took actions that led to many people losing their lives. ", \
-                    "Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik, rather than the livelihood and peaceful co-living potential."]
+                    "Another scenario is the ongoing conflict between Palestine and Israel. Lack of compassion has led to solutions being made on realpolitik."]
+        #, rather than the livelihood and peaceful co-living potential.
         return greet_user
 
     def greet_user2(self, user_id):
