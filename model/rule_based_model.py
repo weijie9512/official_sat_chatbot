@@ -40,6 +40,8 @@ class ModelDecisionMaker:
         self.news_homeless = pd.read_csv(f'{ROOT_DIR}/data/news_data/homeless.csv')
         self.news_wealth_inequality = pd.read_csv(f'{ROOT_DIR}/data/news_data/wealth_inequality.csv')
         self.news_gender_inequality = pd.read_csv(f'{ROOT_DIR}/data/news_data/gender_inequality.csv')
+        self.news_accident = pd.read_csv(f'{ROOT_DIR}/data/news_data/accident.csv')
+        self.news_physical_illness = pd.read_csv(f'{ROOT_DIR}/data/news_data/physical_illness.csv')
 
         
 
@@ -128,7 +130,8 @@ class ModelDecisionMaker:
         self.nodes_count_by_user = {}
         self.nodes_direction = {}
         self.news_by_category = {"mental": self.news_mental, "war": self.news_war, "climate": self.news_climate, "poverty": self.news_poverty,  \
-                                "homeless": self.news_homeless, "wealth inequality": self.news_wealth_inequality, "gender inequality": self.news_gender_inequality}
+                                "homeless": self.news_homeless, "wealth inequality": self.news_wealth_inequality, "gender inequality": self.news_gender_inequality, \
+                                "accident": self.news_accident, "physical illness": self.news_physical_illness}
         
         self.no_lowercase_node = ["greet_user2", "sat_ask_why_not_help_vulnerable_communities", "auc_awareness_no_feeling", \
                                 "esa_last_week", "coi_start", "coi_start2a", "coi_start2b","sat_ask_type_of_compassion",
@@ -1385,19 +1388,24 @@ class ModelDecisionMaker:
                   "Mental Health": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "mental"),
                   "War": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "war"),
                   "Climate": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "climate"),
-                  "Homeless": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "homeless"),
+                  "Homelessness": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "homeless"),
                   "Poverty": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "poverty"),
                   "Gender Inequality": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "gender inequality"),
                   "Wealth Inequality": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "wealth inequality"),
+                  "Accident": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "accident"),
+                  "Physical Illness": lambda user_id, db_session, curr_session, app: self.auc_awareness_set_news(user_id, app, db_session, "physical illness"),
                },
                "protocols": {
                   "Mental Health": [],
                   "War": [],
                   "Climate": [],
-                  "Homeless": [],
+                  "Homelessness": [],
                   "Poverty": [],
                   "Gender Inequality": [],
                   "Wealth Inequality": [],
+                  "Accident": [],
+                  "Physical Illness": [],
+
                },
 
             

@@ -83,7 +83,7 @@ class News:
         return url
 
     def save_and_update(self):
-        categories = ["mental", "climate", "war", "poverty", "homeless", "wealth_inequality", "gender_inequality"]
+        categories = ["mental", "climate", "war", "poverty", "homeless", "wealth_inequality", "gender_inequality", "accident", "illness"]
         #categories = ["war"]
         for keyword in categories:
             from_date =   (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
@@ -96,7 +96,10 @@ class News:
             d = {'url': url}
             df = pd.DataFrame(d)
             pwd = os.getcwd()
-            df.to_csv(f"{pwd}/data/news_data/{keyword}.csv")
+            if keyword == "illness":
+                df.to_csv(f"{pwd}/data/news_data/physical_illness.csv")
+            else:
+                df.to_csv(f"{pwd}/data/news_data/{keyword}.csv")
 
     def test_run(self):
         print("test")

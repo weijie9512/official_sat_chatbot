@@ -90,7 +90,7 @@ class ActionProvider {
 
     // URL to use for local requests
     const uri = `http://18.170.14.50:5000/api/update_session`;
-    //const uri = `http://localhost:5000/api/update_session`;
+    // const uri = `http://localhost:5000/api/update_session`;
     const response = await axios.post(uri, {
       choice_info
     })

@@ -61,5 +61,5 @@ class PostForm(FlaskForm):
     content = TextAreaField('Content', validators=[DataRequired()])
     category = SelectField('Category', choices=[('war', 'War'), ('mental', 'Mental'), ('climate', 'Climate'),
                                                 ('poverty', 'Poverty'), ('homeless', 'Homeless'), ('wealth_inequality', 'Wealth Inequality'), 
-                                                ('gender_inequality', 'Gender Inequality')])
+                                                ('gender_inequality', 'Gender Inequality'), ("accident", "Accident"), ('physical_illness', 'Physical Illness') ])
     submit = SubmitField('Post')
