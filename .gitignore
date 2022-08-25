@@ -11,3 +11,4 @@
 /jupyter/tokenizer
 *.db
 *.pt
+/jupyter/.ipynb_checkpoints

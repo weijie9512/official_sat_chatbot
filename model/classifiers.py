@@ -177,11 +177,19 @@ def fluency_score(sentence):
   ppl = perplexity(sentence)
   penalty = repetition_penalty(sentence)
   score = (1 / ppl) - penalty
-  #normalise by the highest possible fluency computed on the corpus:
+  # shift right, divided by the maximum value
+  score = (score + 0.11)/ 0.247
+  return score
+
+
+
+  """
   normalised_score = score / 0.16
   if normalised_score < 0:
     normalised_score = 0
   return round(normalised_score, 2)
+  """
+  
 
 
 def get_distance(s1, s2):
