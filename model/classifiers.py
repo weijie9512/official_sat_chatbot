@@ -65,7 +65,7 @@ args_dict = dict(
 args = argparse.Namespace(**args_dict)
 
 
-precomputation = False
+precomputation = True
 
 #load emotion classifier (T5 small)
 with torch.no_grad():
@@ -169,7 +169,7 @@ def repetition_penalty(sentence):
   return penalty
 
 
-def fluency_score(sentence):
+def fluency_score(sentence, version=2):
   '''
   Computes the fluency score of an utterance, given by the
   inverse of the perplexity minus a penalty for repeated tokens
@@ -178,21 +178,22 @@ def fluency_score(sentence):
   penalty = repetition_penalty(sentence)
   score = (1 / ppl) - penalty
   # shift right, divided by the maximum value
-  score = (score + 0.11)/ 0.247
-  return score
+  if version == 1:
+    normalised_score = score / 0.16
+    if normalised_score < 0:
+      normalised_score = 0
+    return round(normalised_score, 2)
+  else:
+    score = (score + 0.11)/ 0.247
+    return score
 
 
 
-  """
-  normalised_score = score / 0.16
-  if normalised_score < 0:
-    normalised_score = 0
-  return round(normalised_score, 2)
   """
   
-
-
-def get_distance(s1, s2):
+  """
+  
+def get_distance(s1, s2, version=2):
   '''
   Computes a distance score between utterances calculated as the overlap
   distance between unigrams, plus the overlap distance squared over bigrams,
@@ -208,24 +209,28 @@ def get_distance(s1, s2):
   for i in range(1, max_n+1):
     s1grams = nltk.ngrams(s1.split(), i)
     s2grams = nltk.ngrams(s2.split(), i)
-    ngram_scores.append((td.overlap.normalized_distance(s1grams, s2grams))**i) #we normalize the distance score to be a value between 0 and 10, before raising to i
+    if version == 1:
+      ngram_scores.append((td.overlap.normalized_distance(s1grams, s2grams))**i) #we normalize the distance score to be a value between 0 and 10, before raising to i
+    else:
+      ngram_scores.append((td.overlap.normalized_distance(s1grams, s2grams))* (i ^ 2)) #we normalize the distance score to be a value between 0 and 10, before raising to i
+    
   normalised_dis = sum(ngram_scores)/(max_n) #normalised
   return normalised_dis
 
 
-def compute_distances(sentence, dataframe):
+def compute_distances(sentence, dataframe, version=2):
   '''
   Computes a list of distances score between an utterance and all the utterances in a dataframe
   '''
   distances = []
   for index, row in dataframe.iterrows():
     df_s = dataframe['sentences'][index] #assuming the dataframe column is called 'sentences'
-    distance = get_distance(df_s.lower(), sentence)
+    distance = get_distance(df_s.lower(), sentence, version)
     distances.append(distance)
   return distances
 
 
-def novelty_score(sentence, dataframe):
+def novelty_score(sentence, dataframe, version=2):
   '''
   Computes the mean of the distances beween an utterance
   and each of the utterances in a given dataframe
@@ -233,13 +238,15 @@ def novelty_score(sentence, dataframe):
   if dataframe.empty:
     score = 1.0
   else:
-    d_list = compute_distances(sentence, dataframe)
+    d_list = compute_distances(sentence, dataframe, version)
     d_score = sum(d_list)
     score = d_score / len(d_list)
+    if version == 2:
+      score = score/13.89 #5.62
   return round(score, 2)
 
 
-def get_sentence_score(sentence, dataframe, question_code):
+def get_sentence_score(sentence, dataframe, version=2, question_code=None):
   '''
   Calculates how fit a sentence is based on its weighted empathy, fluency
   and novelty values
@@ -252,6 +259,6 @@ def get_sentence_score(sentence, dataframe, question_code):
     print("Using live score")
     empathy = empathy_score(sentence)
     fluency = fluency_score(sentence)
-  novelty = novelty_score(sentence, dataframe)
-  score = empathy + 0.75*fluency + 2*novelty
+  novelty = novelty_score(sentence, dataframe, version)
+  score = 1*empathy + 1*fluency + 1.5*novelty
   return score
