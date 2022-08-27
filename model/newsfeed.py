@@ -51,7 +51,7 @@ class News:
 
         formatted_query = ' '.join(query.split("_"))
         print(formatted_query)
-        if formatted_query in ["gender inequality", "wealth inequality", "homeless", "poverty"]:
+        if formatted_query in ["mental", "homeless", "poverty", "accident", "illness"]:
             news = self.newsapi.get_everything(q=formatted_query,
                                             from_param=from_param,
                                             to=to,
