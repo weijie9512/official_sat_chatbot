@@ -1,6 +1,8 @@
 *.DS_STORE
 *.pyc
 /data/ignore
+/data/ignore2
+/jupyter/ignore2
 /data/survey_data/processed_data/paraphrased
 /data/survey_data/labelled_data/processed
 /.ipynb_checkpoints
