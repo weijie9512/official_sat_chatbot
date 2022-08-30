@@ -65,7 +65,7 @@ args_dict = dict(
 args = argparse.Namespace(**args_dict)
 
 
-precomputation = True
+precomputation = False
 
 #load emotion classifier (T5 small)
 with torch.no_grad():
@@ -89,9 +89,7 @@ emp_model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-
 with torch.no_grad():
   if precomputation:
     emp_model.load_state_dict(torch.load("../model/distilbert-base-uncased_full_data.pt", map_location="cpu"))
-  
-  #emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
-  else:
+ else:
     try:
       emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
     except:
@@ -177,21 +175,21 @@ def fluency_score(sentence, version=2):
   ppl = perplexity(sentence)
   penalty = repetition_penalty(sentence)
   score = (1 / ppl) - penalty
-  # shift right, divided by the maximum value
+  
+
+  # if version 1 means the original version
   if version == 1:
     normalised_score = score / 0.16
     if normalised_score < 0:
       normalised_score = 0
     return round(normalised_score, 2)
+
+  # shift right, divided by the maximum value
   else:
     score = (score + 0.11)/ 0.247
     return score
 
 
-
-  """
-  
-  """
   
 def get_distance(s1, s2, version=2):
   '''
@@ -209,8 +207,10 @@ def get_distance(s1, s2, version=2):
   for i in range(1, max_n+1):
     s1grams = nltk.ngrams(s1.split(), i)
     s2grams = nltk.ngrams(s2.split(), i)
+    # Lisa's Version
     if version == 1:
       ngram_scores.append((td.overlap.normalized_distance(s1grams, s2grams))**i) #we normalize the distance score to be a value between 0 and 10, before raising to i
+    # My Version
     else:
       ngram_scores.append((td.overlap.normalized_distance(s1grams, s2grams))* (i ^ 2)) #we normalize the distance score to be a value between 0 and 10, before raising to i
     
@@ -241,6 +241,7 @@ def novelty_score(sentence, dataframe, version=2):
     d_list = compute_distances(sentence, dataframe, version)
     d_score = sum(d_list)
     score = d_score / len(d_list)
+    # Normalised by maximum value
     if version == 2:
       score = score/13.89 #5.62
   return round(score, 2)
@@ -252,13 +253,17 @@ def get_sentence_score(sentence, dataframe, version=2, question_code=None):
   and novelty values
   '''
   try:
-    print("Using precomputed score")
+    # using precomputed score
+    #print("Using precomputed score")
     empathy = precomputed_df.loc[precomputed_df[question_code] == sentence][question_code+ "_empathy"].item()
     fluency = precomputed_df.loc[precomputed_df[question_code] == sentence][question_code+ "_fluency"].item()
   except:
-    print("Using live score")
+    # using live score
+    #print("Using live score")
     empathy = empathy_score(sentence)
     fluency = fluency_score(sentence)
   novelty = novelty_score(sentence, dataframe, version)
+
+  # adjusted the new ratio
   score = 1*empathy + 1*fluency + 1.5*novelty
   return score
