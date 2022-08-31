@@ -89,11 +89,11 @@ emp_model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-
 with torch.no_grad():
   if precomputation:
     emp_model.load_state_dict(torch.load("../model/distilbert-base-uncased_full_data.pt", map_location="cpu"))
- else:
-    try:
-      emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
-    except:
-      emp_model.load_state_dict(torch.load("model/distilbert-base-uncased_full_data_stable.pt", map_location="cpu"))
+  else:
+      try:
+        emp_model.load_state_dict(torch.load("distilbert-base-uncased_full_data.pt", map_location="cpu"))
+      except:
+        emp_model.load_state_dict(torch.load("model/distilbert-base-uncased_full_data_stable.pt", map_location="cpu"))
     
     
 
