@@ -1,4 +1,4 @@
-# individual_project_backend
+# Backend of individual Project
 
 You will need to install Python 3 first (3.6 or higher should work fine).
 
@@ -29,12 +29,12 @@ flask db migrate -m "testDB table"
 flask db upgrade
 
 # ~ Launch flask ~ #
-flask run <- starts dev server
+flask run <- starts development server
 
 Commands for root dir:
 
 # To launch gunicorn, cd to individual-project-app (cd ..) then:
-gunicorn -b 0.0.0.0:5000 model.flask_backend_with_aws <- prod server
+gunicorn -b 0.0.0.0:5000 model.flask_backend_with_aws <- production server
 
 May need to adjust above command to be of following format (used in AWS instance):
 gunicorn3 -b 127.0.0.1:5000 -t 600 "model:create_app()"
